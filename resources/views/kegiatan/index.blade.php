@@ -69,7 +69,7 @@
                 <h3 class="mb-0">Data Kegiatan</h3>
               </div>
               <div class="col text-right">
-                <a href="javascript:void(0)" class="btn btn-primary" id="create-new-layanan" onclick="addLayanan()">Tambah Kegiatan</a>
+                <a href="javascript:void(0)" class="btn btn-primary" id="create-new-kegiatan" onclick="addKegiatan()">Tambah Kegiatan</a>
               </div>
             </div>
           </div>
@@ -88,32 +88,37 @@
                 </tr>
               </thead>
               <tbody class="list">
-                
-                    <tr id="">
+                @for($i = 1; $i <= sizeof($kegiatan); $i++)
+                    <tr id="row_{{$kegiatan[$i-1]->id}}">
                       <td>
-                        1.
+                        {{ $i }}
                       </td>
                       <td>
-                        Acara Pelatihan Paguyuban
+                        {{ $kegiatan[$i-1]->acara }}
                       </td>
                       <td>
-                        Rumah Pak Joko
+                        {{ $kegiatan[$i-1]->tempat }}
                       </td>
                       <td>
-                        2021-01-14
+                        {{ $kegiatan[$i-1]->tanggal }}
                       </td>
                       <td>
-                        13:00
+                        {{ $kegiatan[$i-1]->jammulai }}
                       </td>
                       <td>
-                        16:00
+                        {{ $kegiatan[$i-1]->jamselesai }}
                       </td>
                       <td>
-                        <a href="javascript:void(0)" data-id="" onclick="editLayanan(event.target)" class="btn btn-info">Edit</a>
-                        <a href="javascript:void(0)" data-id="" class="btn btn-danger" onclick="deleteLayanan(event.target)">Delete</a>
+                        <form action="/kegiatan/{{$kegiatan[$i-1]->id}}" method="GET">
+                            <button class="btn btn-primary" type="submit">
+                                Detail
+                            </button>
+                        </form>
+                        <a href="javascript:void(0)" data-id="{{$kegiatan[$i-1]->id}}" onclick="editKegiatan(event.target)" class="btn btn-info">Edit</a>
+                        <!-- <a href="javascript:void(0)" data-id="" class="btn btn-danger" onclick="deleteKegiatan(event.target)">Delete</a> -->
                       </td>
                     </tr>
-                  
+                  @endfor
               </tbody>
               <tfoot style="background-color: lavender;">
 
@@ -135,47 +140,47 @@
                     </button>
                   </div>
                   <div class="modal-body">
-                      <form name="layananForm" class="form-horizontal">
-                         <input type="hidden" name="layanan_id" id="layanan_id">
+                      <form name="kegiatanForm" class="form-horizontal">
+                         <input type="hidden" name="id" id="id">
                           <div class="form-group">
                               <label for="name" class="col-sm-8">Acara</label>
                               <div class="col-sm-12">
-                                  <input type="text" class="form-control" id="nama_layanan" name="nama_layanan" placeholder="Masukkan Nama Kegiatan" value="" required>
-                                  <span id="namaLayananError" class="alert-message"></span>
+                                  <input type="text" class="form-control" id="acara" name="acara" placeholder="Masukkan Nama Kegiatan" value="" required>
+                                  <span id="acaraError" class="alert-message"></span>
                               </div>
                           </div>
                           <div class="form-group">
                               <label for="name" class="col-sm-8">Tempat</label>
                               <div class="col-sm-12">
-                                  <input type="text" class="form-control" id="nama_layanan" name="nama_layanan" placeholder="Masukkan Tempat" value="" required>
-                                  <span id="namaLayananError" class="alert-message"></span>
+                                  <input type="text" class="form-control" id="tempat" name="tempat" placeholder="Masukkan Tempat" value="" required>
+                                  <span id="tempatError" class="alert-message"></span>
                               </div>
                           </div>
                           <div class="form-group">
                               <label for="name" class="col-sm-8">Tanggal</label>
                               <div class="col-sm-12">
-                                  <input type="date" class="form-control" id="nama_layanan" name="nama_layanan" placeholder="Masukkan Tanggal" value="" required>
-                                  <span id="namaLayananError" class="alert-message"></span>
+                                  <input type="date" class="form-control" id="tanggal" name="tanggal" placeholder="Masukkan Tanggal" value="" required>
+                                  <span id="tanggalError" class="alert-message"></span>
                               </div>
                           </div>
                           <div class="form-group">
                               <label for="name" class="col-sm-8">Jam Mulai</label>
                               <div class="col-sm-12">
-                                  <input type="time" class="form-control" id="nama_layanan" name="nama_layanan" placeholder="Masukkan Jam Mulai" value="" required>
-                                  <span id="namaLayananError" class="alert-message"></span>
+                                  <input type="time" class="form-control" id="jammulai" name="jammulai" placeholder="Masukkan Jam Mulai" value="" required>
+                                  <span id="jamMulaiError" class="alert-message"></span>
                               </div>
                           </div>
                           <div class="form-group">
                               <label for="name" class="col-sm-8">Jam Selesai</label>
                               <div class="col-sm-12">
-                                  <input type="time" class="form-control" id="nama_layanan" name="nama_layanan" placeholder="Masukkan Jam Selesai" value="" required>
-                                  <span id="namaLayananError" class="alert-message"></span>
+                                  <input type="time" class="form-control" id="jamselesai" name="jamselesai" placeholder="Masukkan Jam Selesai" value="" required>
+                                  <span id="jamSelesaiError" class="alert-message"></span>
                               </div>
                           </div>
                       </form>
                   </div>
                   <div class="modal-footer">
-                      <button type="button" class="btn btn-primary" onclick="createLayanan()">Confirm</button>
+                      <button type="button" class="btn btn-primary" onclick="createkegiatan()">Confirm</button>
                   </div>
               </div>
             </div>
@@ -211,14 +216,25 @@
 
 @push('js')
 
+
+
 <script>
   $("#post-modal").on('hidden.bs.modal', function(e) {
-    $("#layanan_id").val('');
-    $("#nama_layanan").val('');
+    $("#id").val('');
+    $("#acara").val('');
+    $("#tempat").val('');
+    $("#tanggal").val('');
+    $("#jammulai").val('');
+    $("#jamselesai").val('');
   })
+ 
+
+
 </script>
 
     <script>
+    
+          
         var table = $('#laravel_crud').DataTable({
           "lengthMenu": [[10, 20, 25, 50, 100, -1], [10, 20, 25, 50, 100, "All"]],
           "language": {
@@ -240,39 +256,61 @@
             });
         }).draw();
 
-            function addLayanan() {
-              $("#layanan_id").val();
-              $('#post-modal').modal('show');
-            }
+        // });
+      
+    </script>
+
+    <script>
+      function addKegiatan() {
+        $("#id").val();
+        $('#post-modal').modal('show');
+      }
+    </script>
+
+    <script>
+      function editKegiatan(event) {
+        var id  = $(event).data("id");
+
+        let _url = `/kegiatans/${id}`;
+        $('#acaraError').text('');
+        $('#tempatError').text('');
+        $('#tanggalError').text('');
+        $('#jamMulaiError').text('');
+        $('#jamSelesaiError').text('');
+        $("#loader").show();
+        
+        $.ajax({
+          url: _url,
+          type: "GET",
+          success: function(response) {
+              if(response) {
+                $("#id").val(response.id);
+                $("#acara").val(response.acara);
+                $("#tempat").val(response.tempat);
+                $("#tanggal").val(response.tanggal);
+                $("#jammulai").val(response.jammulai);
+                $("#jamselesai").val(response.jamselesai);
+                $('#post-modal').modal('show');
+                $("#loader").hide();
+              }
+          }
+        });
+      }
+    </script>
+
+    <script>
+function createkegiatan() {
+              var acara = $('#acara').val();
+              var tempat = $('#tempat').val();
+              var tanggal = $('#tanggal').val();
+              var jammulai = $('#jammulai').val();
+              var jamselesai = $('#jamselesai').val();
+              var id = $('#id').val();
           
-            function editLayanan(event) {
-              var id  = $(event).data("id");
-              let _url = `/admin/layanan/${id}`;
-              $('#namaLayananError').text('');
-              $("#loader").show();
-              
-              $.ajax({
-                url: _url,
-                type: "GET",
-                success: function(response) {
-                    if(response) {
-                      $("#layanan_id").val(response.id);
-                      $("#nama_layanan").val(response.nama_layanan);
-                      $('#post-modal').modal('show');
-                      $("#loader").hide();
-                    }
-                }
-              });
-            }
-          
-            function createLayanan() {
-              var nama_layanan = $('#nama_layanan').val();
-              var id = $('#layanan_id').val();
-          
-              let _url     = `/admin/layanan`;
+              let _url     = `/kegiatan`;
               let _token   = $('meta[name="csrf-token"]').attr('content');
           
-              if(nama_layanan!=""){
+              if(acara!="" && tempat!="" && tanggal!="" && jammulai!="" && jamselesai!=""){
                 $('#post-modal').modal('hide');
 
                 $("#loader").show();
@@ -281,8 +319,12 @@
                   url: _url,
                   type: "POST",
                   data: {
-                    layanan_id: id,
-                    nama_layanan: nama_layanan,
+                    id: id,
+                    acara: acara,
+                    tempat: tempat,
+                    tanggal: tanggal,
+                    jammulai: jammulai,
+                    jamselesai: jamselesai,
                     _token: _token
                   },
 
@@ -290,7 +332,11 @@
                       if(response.code == 200) {
 
                         if(id != ""){
-                          $("#row_"+id+" td:nth-child(2)").html(response.data.nama_layanan);
+                          $("#row_"+id+" td:nth-child(2)").html(response.data.acara);
+                          $("#row_"+id+" td:nth-child(3)").html(response.data.tempat);
+                          $("#row_"+id+" td:nth-child(4)").html(response.data.tanggal);
+                          $("#row_"+id+" td:nth-child(5)").html(response.data.jammulai);
+                          $("#row_"+id+" td:nth-child(6)").html(response.data.jamselesai);
 
                           // location.reload(true);
                         } else {
@@ -298,10 +344,14 @@
                           // $('table tbody').prepend('<tr id="row_'+response.data.id+'"><td>'+response.data.id+'</td><td>'+response.data.name+'</td><td>'+response.data.email+'</td><td>'+response.data.is_admin+'</td><td><a href="javascript:void(0)" data-id="'+response.data.id+'" class="btn btn-danger" onclick="deleteAccount(event.target)">Delete</a></td></tr>');
 
                           // $('table tfoot').prepend('<tr id="row_'+response.data.id+'"><td>'+response.data.id+'</td><td>'+response.data.name+'</td><td>'+response.data.email+'</td><td>'+response.data.is_admin+'</td><td><a href="javascript:void(0)" data-id="'+response.data.id+'" onclick="editAccount(event.target)" class="btn btn-info">Edit</a><a href="javascript:void(0)" data-id="'+response.data.id+'" class="btn btn-danger" onclick="deleteAccount(event.target)">Delete</a></td></tr>');
-                          $('table tfoot').prepend('<tr id="row_'+response.data.id+'"><td></td><td>'+response.data.nama_layanan+'</td><td><a href="javascript:void(0)" data-id="'+response.data.id+'" onclick="editLayanan(event.target)" class="btn btn-info">Edit</a><a href="javascript:void(0)" data-id="'+response.data.id+'" class="btn btn-danger" onclick="deleteLayanan(event.target)">Delete</a></td></tr>');
+                          $('table tfoot').prepend('<tr id="row_'+response.data.id+'"><td></td><td>'+response.data.acara+'</td><td>'+response.data.tempat+'</td><td>'+response.data.tanggal+'</td><td>'+response.data.jammulai+'</td><td>'+response.data.jamselesai+'</td><td><form action="/kegiatan/" method="GET"><button class="btn btn-primary" type="submit">Detail</button></form><a href="javascript:void(0)" data-id="'+response.data.id+'" onclick="editKegiatan(event.target)" class="btn btn-info">Edit</a><a href="javascript:void(0)" data-id="'+response.data.id+'" class="btn btn-danger" onclick="deleteKegiatan(event.target)">Delete</a></td></tr>');
                         }
-                        $('#nama_layanan').val('');
-          
+                        $('#acara').val('');
+                        $('#tempat').val('');
+                        $('#tanggal').val('');
+                        $('#jammulai').val('');
+                        $('#jamselesai').val('');
+
                         $('#post-modal').modal('hide');
 
                         // location.reload(true);
@@ -311,7 +361,11 @@
 
                   },
                   error: function(response) {
-                    $('#namaLayananError').text(response.responseJSON.errors.nama_layanan);
+                    $('#acaraError').text(response.responseJSON.errors.acara);
+                    $('#tempatError').text(response.responseJSON.errors.tempat);
+                    $('#tanggalError').text(response.responseJSON.errors.tanggal);
+                    $('#jamMulaiError').text(response.responseJSON.errors.jammulai);
+                    $('#jamSelesaiError').text(response.responseJSON.errors.jamselesai);
                     // console.log(JSON.stringify(response.responseJSON.errors));
                   }
                 });
@@ -320,10 +374,14 @@
               }
             }
           
-            function deleteLayanan(event) {
+            
+    </script>
+
+    <script>          
+            function deleteKegiatan(event) {
               $('#delete-modal').modal('show');
               var id  = $(event).data("id");
-              let _url = `/admin/layanan/${id}`;
+              let _url = `/kegiatan/${id}`;
               let _token   = $('meta[name="csrf-token"]').attr('content');
               $(document).on('click', '#btnDelete', function(){
                 $.ajax({
@@ -344,10 +402,7 @@
                 });
               });
             }
-        // });
-      
     </script>
-
     <!-- Argon Scripts -->
     <!-- Core -->
     <script src="{{ asset('assets') }}/vendor/js-cookie/js.cookie.js"></script>

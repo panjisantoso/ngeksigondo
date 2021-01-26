@@ -18,8 +18,8 @@ class IsUser
     public function handle(Request $request, Closure $next)
     {
         if(Auth::check()){
-            if (auth()->user()->is_admin == 0) {
-                return redirect()->route('admin.home');
+            if (auth()->user()->is_admin == 1) {
+                return redirect()->route('loginHome');
             } else {
                 return redirect()->route('home');
             }

@@ -73,7 +73,7 @@
                     <a href="#" style="color:rgba(0, 0, 0, .5); " class="dropdown-toggle" ><i class="ni ni-bullet-list-67 text-blue"></i> &#8287; &#8287; &#8287; Master Data </a>
                     </button>
                         <div class="dropdown-container">
-                            @if (Auth::user()->is_admin == 0)
+                            @if (Auth::user()->is_admin == 1)
                                 <a class="nav-link" href="/pengumuman">
                                     <i class="ni ni-bullet-list-67 text-blue"></i> {{ __('Pengumuman') }}
                                 </a>
@@ -114,7 +114,7 @@
                     </a>
                 </li>
                 {{-- @if (Auth::check())
-                    @if (Auth::user()->is_admin == 0)
+                    @if (Auth::user()->is_admin == 1)
                         <li class="nav-item">
                             <a class="nav-link" href="/admin/account">
                                 <i class="ni ni-single-02 text-blue"></i> {{ __('Create Account') }}

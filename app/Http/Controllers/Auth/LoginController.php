@@ -50,9 +50,10 @@ class LoginController extends Controller
    
         if(auth()->attempt(array('nik' => $input['nik'], 'password' => $input['password'], 'status' => "1")))
         {
-            if (auth()->user()->is_admin == 0) {
+            if (auth()->user()->is_admin == 1) {
                 return redirect()->route('loginHome');
             }else{
+                
                 return redirect()->route('home');
             }
         }else{

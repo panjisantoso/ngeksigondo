@@ -1,6 +1,6 @@
 @extends('layouts.app1')
 
-@section('tittle', 'Home')
+@section('tittle', 'Kegiatan')
 
 @section('content')
 <main id="main">
@@ -10,7 +10,7 @@
       <div class="container">
 
         <div class="d-flex justify-content-between align-items-center">
-          <h2><b>HUT Denpasar Disemarakkan Wayang Kulit Semalam Suntuk</b></h2>
+          <h2><b>{{$kegiatans->acara}}</b></h2>
           <ol>
             <li><a href="index.html">Home</a></li>
             <li>Berita</li>
@@ -23,7 +23,7 @@
     <section class="inner-page">
       <div class="container">
       <img src="assets3/img/berita1.jpg" class="img-fluid" alt="" style="width:600px;">
-        <p>
+        <p align="justify">
         Perayaan Hari Ulang Tahun ke-225 Kota Denpasar disemarakkan pentas wayang kulit semalam suntuk menampilkan dalang bapak-anak Ki Sutio-Gatot dari Solo, Jawa Tengah, dengan lakon Gatotkaca Jadi Ratu.
 
 Pentas wayang kulit yang didukung 35 kru, baik penabuh gamelan maupun tujuh sinden di arena pameran publik dan pasar rakyat Lapangan Lumintang, Jalan Gatot Subroto, Denpasar, itu berlangsung semarak dihadiri ratusan penonton yang rela begadang sejak Sabtu (2/3) malam hingga Minggu subuh.

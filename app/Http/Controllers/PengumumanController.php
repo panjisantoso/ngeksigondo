@@ -47,7 +47,9 @@ class PengumumanController extends Controller
      */
     public function show($id)
     {
-        //
+        $kegiatan = Kegiatan::find($id);
+
+        return response()->json($kegiatan);
     }
 
     /**

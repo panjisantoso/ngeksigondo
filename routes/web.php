@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 
-use App\Http\Controllers\HomeController;
+use App\Http\Controllers\Dashboard2Controller;
 use App\Http\Controllers\Dashboard1Controller;
 use App\Http\Controllers\ProfileController;
 
@@ -28,9 +28,13 @@ Auth::routes();
 
 Route::get('/', [App\Http\Controllers\Dashboard1Controller::class, 'index'])->name('home');
 Route::get('/detailBerita', 'Dashboard1Controller@lihatBerita');
+Route::get('/detailKegiatan/{id}', 'Dashboard1Controller@lihatKegiatan');
+Route::post('/detailKegiatan', 'Dashboard1Controller@addKehadiran');
+Route::delete('/detailKegiatan/{id}', 'Dashboard1Controller@deleteKehadiran');
+
 
 Route::group(['middleware' => ['is_admin']], function () {
-        Route::get('/home', [App\Http\Controllers\Dashboard1Controller::class, 'indexLogin'])->name('loginHome');
+        Route::get('home', [Dashboard2Controller::class, 'index'])->name('loginHome');
         Route::resource('account', 'AccountController');
         Route::get('/detailRealisasi/export_excel', 'DetailRealisasiController@export_excel');
         Route::get('/detailWifi/export_excel', 'DetailWifiController@export_excel');
@@ -54,7 +58,9 @@ Route::group(['middleware' => ['is_admin']], function () {
         Route::resource('/anggota','AnggotaController');
         Route::resource('/pengumuman','PengumumanController');
         Route::resource('/kegiatan','KegiatanController');
-        
+        Route::post('/addPengumuman', 'KegiatanController@storePengumuman');
+        Route::put('/kegiatan/{id}', 'KegiatanController@updateKehadiran');
+        Route::get('/kegiatans/{id}', 'KegiatanController@showEdit');
         Route::resource('/berita','BeritaController');
 });
 

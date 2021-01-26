@@ -257,47 +257,29 @@ Sumber: Antara              </p>
           <div class="col-lg-12 d-flex justify-content-center">
             <ul id="portfolio-flters">
               <li data-filter="*" class="filter-active">All</li>
-              <li data-filter=".filter-app">Pelatihan</li>
-              <li data-filter=".filter-card">Pernikahan</li>
-              <li data-filter=".filter-web">Lamaran</li>
+              <li data-filter=".filter-akan-datang">Akan Datang</li>
+              <li data-filter=".filter-selesai">Selesai</li>
             </ul>
           </div>
         </div>
 
         <div class="row portfolio-container">
 
-
+        @for($i=1; $i<=count($kegiatanList); $i++)
           <div class="col-lg-4 col-md-6 portfolio-item filter-card">
             <div class="portfolio-wrap">
-              <img src="assets3/img/kegiatan2.jfif" class="img-fluid" alt=""style="width:600px">
-              <div class="portfolio-info">
-                <h4>Pelatihan Manajemen Pemasaran </h4>
-                <p>Penyerahan Materi Pelatihan</p>
-              </div>
+              <a href="/detailKegiatan/{{$kegiatanList[$i-1]->id}}">
+              
+                <img src="assets3/img/kegiatanDummy.jpg" class="img-fluid" alt=""style="width:600px">
+             
+                <div class="portfolio-info">
+                  <h4>{{ $kegiatanList[$i-1]->acara }} </h4>
+                  <p> {{ $kegiatanList[$i-1]->tanggal }} </p>
+                </div>
+              </a>
             </div>
           </div>
-
-
-          <div class="col-lg-4 col-md-6 portfolio-item filter-card">
-            <div class="portfolio-wrap">
-              <img src="assets3/img/kegiatan1.jpg" class="img-fluid" alt="">
-              <div class="portfolio-info">
-                <h4>Pernikahan Wulan dengan Sapto (25 Juni 2011)</h4>
-                <p>Prosesi Lamaran Calon Pengantin Pria dengan Rombongan Keluarga</p>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-lg-4 col-md-6 portfolio-item filter-card">
-            <div class="portfolio-wrap">
-              <img src="assets3/img/kegiatan3.jpg" class="img-fluid" alt="">
-              <div class="portfolio-info">
-                <h4>Card 3</h4>
-                <p>Card</p>
-              </div>
-            </div>
-          </div>
-
+        @endfor
 
         </div>
 
