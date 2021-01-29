@@ -80,7 +80,7 @@
                 <tr>
                   <th scope="col" class="sort" data-sort="name">No</th>
                   <th scope="col" class="sort" data-sort="name">Tanggal Tayang</th>
-                  <th scope="col" class="sort" data-sort="name">Tanggal Selesai</th>
+                  <th scope="col" class="sort" data-sort="name">Tanggal Akhir</th>
                   <th scope="col" class="sort" data-sort="name">Isi Pengumuman</th>
                   <th scope="col" class="sort" data-sort="name">Gambar</th>
                   <th scope="col" class="sort" data-sort="name">File Download</th>
@@ -94,18 +94,18 @@
                         {{ $i }}
                       </td>
                       <td>
-                        {{ $pengumuman[$i-1]->tgl_mulai }}
+                        {{ $pengumuman[$i-1]->tgl_tayang }}
                       </td>
                       <td>
-                        {{ $pengumuman[$i-1]->tgl_mulai }}
+                        {{ $pengumuman[$i-1]->tgl_akhir }}
                       </td>
                       <td>
                         {{ $pengumuman[$i-1]->isi }}
                       </td>
                       <td>
-                        {{ $pengumuman[$i-1]->gambar1 }}
-                        {{ $pengumuman[$i-1]->gambar2 }}
-                        {{ $pengumuman[$i-1]->gambar3 }}
+                        <img src="/{{ $pengumuman[$i-1]->gambar1 }}" style="width:300px;" class="img-fluid" alt=""><br>                        
+                        <img src="/{{ $pengumuman[$i-1]->gambar2 }}" style="width:300px;" class="img-fluid" alt=""><br> 
+                        <img src="/{{ $pengumuman[$i-1]->gambar3 }}" style="width:300px;" class="img-fluid" alt="">
                       </td>
                       <td>
                         {{ $pengumuman[$i-1]->download }}
@@ -147,10 +147,10 @@
                               </div>
                           </div>
                           <div class="form-group">
-                              <label for="name" class="col-sm-8">Tanggal Selesai</label>
+                              <label for="name" class="col-sm-8">Tanggal Akhir</label>
                               <div class="col-sm-12">
-                                  <input type="date" class="form-control" id="tgl_selesai" name="tgl_selesai" placeholder="Masukkan Tanggal Tayang" value="" required>
-                                  <span id="tglSelesaiError" class="alert-message"></span>
+                                  <input type="date" class="form-control" id="tgl_akhir" name="tgl_akhir" placeholder="Masukkan Tanggal Akhir" value="" required>
+                                  <span id="tglAkhirError" class="alert-message"></span>
                               </div>
                           </div>
                           <div class="form-group">
@@ -161,10 +161,24 @@
                               </div>
                           </div>
                           <div class="form-group">
-                              <label for="name" class="col-sm-8">Gambar</label>
+                              <label for="name" class="col-sm-8">Gambar 1</label>
                               <div class="col-sm-12">
-                                  <input type="file" class="form-control" id="gambar1" name="gambar1" placeholder="Masukkan Gambar" value="" required>
-                                  <span id="gambarError " class="alert-message"></span>
+                                  <input type="file" class="form-control" id="gambar1" name="gambar1" placeholder="Masukkan Gambar 1" value="" >
+                                  <span id="gambar1Error " class="alert-message"></span>
+                              </div>
+                          </div>
+                          <div class="form-group">
+                              <label for="name" class="col-sm-8">Gambar 2</label>
+                              <div class="col-sm-12">
+                                  <input type="file" class="form-control" id="gambar2" name="gambar2" placeholder="Masukkan Gambar 2" value="" >
+                                  <span id="gambar2Error " class="alert-message"></span>
+                              </div>
+                          </div>
+                          <div class="form-group">
+                              <label for="name" class="col-sm-8">Gambar 3</label>
+                              <div class="col-sm-12">
+                                  <input type="file" class="form-control" id="gambar3" name="gambar3" placeholder="Masukkan Gambar 3" value="" >
+                                  <span id="gambar3Error " class="alert-message"></span>
                               </div>
                           </div>
                           <div class="form-group">
@@ -216,10 +230,12 @@
 <script>
   $("#post-modal").on('hidden.bs.modal', function(e) {
     $("#id").val('');
-    $("#tgl_mulai").val('');
+    $("#tgl_tayang").val('');
     $("#tgl_akhir").val('');
     $("#isi").val('');
     $("#gambar1").val('');
+    $("#gambar2").val('');
+    $("#gambar3").val('');
     $("#download").val('');
   })
 </script>
@@ -254,10 +270,12 @@
             function editPengumuman(event) {
               var id  = $(event).data("id");
               let _url = `/pengumuman/${id}`;
-              $('#tglMulaiError').text('');
-              $('#tglSelesaiError').text('');
+              $('#tglTayangError').text('');
+              $('#tglAkhirError').text('');
               $('#isiPengumumanError').text('');
-              $('#gambarError').text('');
+              $('#gambar1Error').text('');
+              $('#gambar2Error').text('');
+              $('#gambar3Error').text('');
               $('#downloadError').text('');
               $("#loader").show();
               
@@ -267,10 +285,12 @@
                 success: function(response) {
                     if(response) {
                       $("#id").val(response.id);
-                      $("#tgl_mulai").val(response.tgl_mulai);
-                      $("#tgl_selesai").val(response.tgl_selesai);
+                      $("#tgl_tayang").val(response.tgl_tayang);
+                      $("#tgl_akhir").val(response.tgl_akhir);
                       $("#isi").val(response.isi);
                       $("#gambar1").val(response.gambar1);
+                      $("#gambar2").val(response.gambar2);
+                      $("#gambar3").val(response.gambar3);
                       $("#download").val(response.download);
                       $('#post-modal').modal('show');
                       $("#loader").hide();
@@ -280,10 +300,12 @@
             }
           
             function createPengumuman() {
-              var tgl_mulai = $('#tgl_mulai').val();
-              var tgl_selesai = $('#tgl_selesai').val();
+              var tgl_tayang = $('#tgl_tayang').val();
+              var tgl_akhir = $('#tgl_akhir').val();
               var isi = $('#isi').val();
               var gambar1 = $('#gambar1').val();
+              var gambar2 = $('#gambar2').val();
+              var gambar3 = $('#gambar3').val();
               var download = $('#download').val();
               
 
@@ -292,7 +314,7 @@
               let _url     = `/pengumuman`;
               let _token   = $('meta[name="csrf-token"]').attr('content');
           
-              if(tgl_mulai!="" && tgl_selesai!="" && isi!="" && gambar1!="" && download!=""){
+              if(tgl_tayang!="" && tgl_akhir!="" && isi!="" && gambar1!="" && download!=""){
                 $('#post-modal').modal('hide');
 
                 $("#loader").show();
@@ -302,10 +324,12 @@
                   type: "POST",
                   data: {
                     id: id,
-                    tgl_mulai: tgl_mulai,
-                    tgl_selesai: tgl_selesai,
+                    tgl_tayang: tgl_tayang,
+                    tgl_akhir: tgl_akhir,
                     isi: isi,
                     gambar1: gambar1,
+                    gambar2: gambar2,
+                    gambar3: gambar3,
                     download: download,
                     _token: _token
                   },
@@ -314,11 +338,13 @@
                       if(response.code == 200) {
 
                         if(id != ""){
-                          $("#row_"+id+" td:nth-child(2)").html(response.data.tgl_mulai);
-                          $("#row_"+id+" td:nth-child(3)").html(response.data.tgl_selesai);
+                          $("#row_"+id+" td:nth-child(2)").html(response.data.tgl_tayang);
+                          $("#row_"+id+" td:nth-child(3)").html(response.data.tgl_akhir);
                           $("#row_"+id+" td:nth-child(4)").html(response.data.isi);
                           $("#row_"+id+" td:nth-child(5)").html(response.data.gambar1);
-                          $("#row_"+id+" td:nth-child(6)").html(response.data.download);
+                          $("#row_"+id+" td:nth-child(6)").html(response.data.gambar2);
+                          $("#row_"+id+" td:nth-child(7)").html(response.data.gambar3);
+                          $("#row_"+id+" td:nth-child(8)").html(response.data.download);
 
                           // location.reload(true);
                         } else {
@@ -326,12 +352,14 @@
                           // $('table tbody').prepend('<tr id="row_'+response.data.id+'"><td>'+response.data.id+'</td><td>'+response.data.name+'</td><td>'+response.data.email+'</td><td>'+response.data.is_admin+'</td><td><a href="javascript:void(0)" data-id="'+response.data.id+'" class="btn btn-danger" onclick="deleteAccount(event.target)">Delete</a></td></tr>');
 
                           // $('table tfoot').prepend('<tr id="row_'+response.data.id+'"><td>'+response.data.id+'</td><td>'+response.data.name+'</td><td>'+response.data.email+'</td><td>'+response.data.is_admin+'</td><td><a href="javascript:void(0)" data-id="'+response.data.id+'" onclick="editAccount(event.target)" class="btn btn-info">Edit</a><a href="javascript:void(0)" data-id="'+response.data.id+'" class="btn btn-danger" onclick="deleteAccount(event.target)">Delete</a></td></tr>');
-                          $('table tfoot').prepend('<tr id="row_'+response.data.id+'"><td></td><td>'+response.data.tgl_mulai+'</td><td>'+response.data.tgl_selesai+'</td><td>'+response.data.isi+'</td><td>'+response.data.gambar1+'</td><td>'+response.data.download+'</td><td><a href="javascript:void(0)" data-id="'+response.data.id+'" onclick="editPengumuman(event.target)" class="btn btn-info">Edit</a><a href="javascript:void(0)" data-id="'+response.data.id+'" class="btn btn-danger" onclick="deletePengumuman(event.target)">Delete</a></td></tr>');
+                          $('table tfoot').prepend('<tr id="row_'+response.data.id+'"><td></td><td>'+response.data.tgl_tayang+'</td><td>'+response.data.tgl_akhir+'</td><td>'+response.data.isi+'</td><td>'+response.data.gambar1+'</td><td>'+response.data.gambar2+'</td><td>'+response.data.gambar3+'</td><td>'+response.data.download+'</td><td><a href="javascript:void(0)" data-id="'+response.data.id+'" onclick="editPengumuman(event.target)" class="btn btn-info">Edit</a><a href="javascript:void(0)" data-id="'+response.data.id+'" class="btn btn-danger" onclick="deletePengumuman(event.target)">Delete</a></td></tr>');
                         }
-                        $('#tgl_mulai').val('');
-                        $('#tgl_selesai').val('');
+                        $('#tgl_tayang').val('');
+                        $('#tgl_akhir').val('');
                         $('#isi').val('');
                         $('#gambar1').val('');
+                        $('#gambar2').val('');
+                        $('#gambar3').val('');
                         $('#download').val('');
                         
                         $('#post-modal').modal('hide');
@@ -343,10 +371,12 @@
 
                   },
                   error: function(response) {
-                    $('#tglMulaiError').text(response.responseJSON.errors.tgl_mulai);
-                    $('#tglSelesaiError').text(response.responseJSON.errors.tgl_selesai);
+                    $('#tglTayangError').text(response.responseJSON.errors.tgl_tayang);
+                    $('#tglAkhirError').text(response.responseJSON.errors.tgl_akhir);
                     $('#isiPengumumanError').text(response.responseJSON.errors.isi);
-                    $('#gambarError').text(response.responseJSON.errors.gambar1);
+                    $('#gambar1Error').text(response.responseJSON.errors.gambar1);
+                    $('#gambar2Error').text(response.responseJSON.errors.gambar2);
+                    $('#gambar3Error').text(response.responseJSON.errors.gambar3);
                     $('#downloadError').text(response.responseJSON.errors.download);
                     // console.log(JSON.stringify(response.responseJSON.errors));
                   }
@@ -356,7 +386,12 @@
               }
             }
           
-            function deletePengumuman(event) {
+            
+        // });
+      
+    </script>
+  <script>
+function deletePengumuman(event) {
               $('#delete-modal').modal('show');
               var id  = $(event).data("id");
               let _url = `/pengumuman/${id}`;
@@ -364,7 +399,7 @@
               $(document).on('click', '#btnDelete', function(){
                 $.ajax({
                   url: _url,
-                  type: 'DELETE',
+                  type: 'PUT',
                   data: {
                     _token: _token
                   },
@@ -380,10 +415,7 @@
                 });
               });
             }
-        // });
-      
-    </script>
-
+  </script>
     <!-- Argon Scripts -->
     <!-- Core -->
     <script src="{{ asset('assets') }}/vendor/js-cookie/js.cookie.js"></script>

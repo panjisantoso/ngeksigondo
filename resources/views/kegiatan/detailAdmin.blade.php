@@ -124,7 +124,7 @@
                 @for($i = 1; $i <= sizeof($kehadirans); $i++)
                 
                     <tr id="row_{{$kehadirans[$i-1]->id}}">
-                    <form action="/kegiatan/{{$kehadirans[$i-1]->id}}" method="POST">
+                    <form action="/kegiatans/{{$kehadirans[$i-1]->id}}" method="POST">
                     @csrf
                     @method("PUT")
                         <td>
@@ -144,8 +144,9 @@
                                 <button class="btn btn-primary" type="submit">Update</button>
                             </div>
                         </td>
+                        </form>
                     </tr>
-                </form>
+               
                 @endfor
               </tbody>
               <tfoot style="background-color: lavender;">
@@ -178,85 +179,94 @@
           
           <div class="card-header border-0">
                     <div class="row">
-                    @if(empty($pengumumans))
-                    <form action="/addPengumuman" method="POST" class="form" enctype="multipart/form-data">
-                        @csrf
-                        <input type="hidden" name="id_kegiatan" id="id_kegiatan" value="{{$kegiatans->id}}">
-                        <div class="col-lg-12">
-                            <div class="form-group">
-                                <label class="form-control-label" for="input-latitude">Isi Pengumuman</label>
-                                <textarea name="isi" id="isi" rows="9"  class="form-control" ></textarea>      
-                            </div>
-                        </div>
-                        <div class="col-lg-12">
-                            <div class="form-group">
-                                <label class="form-control-label" for="input-latitude">Gambar 1</label>
-                                <input type="file" onchange="readURL(this);" class="form-control" required name="gambar1" id="gambar1" multiple accept="image/*" placeholder="Masukkan FIle Gambar">
-                                
-                            </div>
-                        </div>
-                        <div class="col-lg-12">
-                            <div class="form-group">
-                                <label class="form-control-label" for="input-latitude">Gambar 2</label>
-                                <input type="file" onchange="readURL(this);" class="form-control" required name="gambar2" id="gambar2" multiple accept="image/*" placeholder="Masukkan FIle Gambar">
-                                
-                            </div>
-                        </div>
-                        <div class="col-lg-12">
-                            <div class="form-group">
-                                <label class="form-control-label" for="input-latitude">Gambar 3</label>
-                                <input type="file" onchange="readURL(this);" class="form-control" required name="gambar3" id="gambar2" multiple accept="image/*" placeholder="Masukkan FIle Gambar">
-                                
-                            </div>
-                        </div>
-                        <div class="col-lg-12">
-                            <div class="form-group">
-                                <label class="form-control-label" for="input-latitude">File Dokumen</label>
-                                <input type="file" onchange="readURL(this);" class="form-control" required name="download" id="download" multiple accept="pdf/*" placeholder="Masukkan FIle Download">
-                            </div>
-                        </div>
-                        <div class="col text-center">
-                            <button class="btn btn-info" type="submit">Tambah Data</button>
-                        </div>
+                    @if($checkKegiatan == 1)
+                      <form action="/addPengumuman" method="POST" class="form" enctype="multipart/form-data">
+                          @csrf
+                          <input type="hidden" name="id_kegiatan" id="id_kegiatan" value="{{$kegiatans->id}}">
+                          
+                          <div class="col-lg-12">
+                              <div class="form-group">
+                                  <label class="form-control-label" for="input-latitude">Gambar </label>
+                                  <input type="file" onchange="readURL(this);" class="form-control" required name="gambar[]" id="gambar" multiple accept="image/*" placeholder="Masukkan FIle Gambar">
+                                  
+                              </div>
+                          </div>
+                          
+                          <div class="col-lg-12">
+                              <div class="form-group">
+                                  <label class="form-control-label" for="input-latitude">File Dokumen</label>
+                                  <input type="file" onchange="readURL(this);" class="form-control" required name="dokumen" id="dokumen" multiple accept="pdf/*" placeholder="Masukkan FIle Download">
+                              </div>
+                          </div>
+                          <div class="col text-center">
+                              <button class="btn btn-info" type="submit">Tambah Data</button>
+                          </div>
                         </form>
                         @else
                             <div class="col-lg-12">
                                 <div class="form-group">
-                                    <label class="form-control-label" for="input-latitude">Isi Pengumuman</label>
-                                    <textarea name="isi" id="isi" rows="9"  class="form-control" readonly>{{ $pengumumans->isi }}</textarea>      
+                                    <label class="form-control-label" for="input-latitude">Gambar</label>
                                 </div>
                             </div>
-                            <div class="col-lg-12">
-                                <div class="form-group">
-                                    <label class="form-control-label" for="input-latitude">Gambar 1</label>
-                                    <img src="/{{ $pengumumans->gambar1 }}" style="width:350px;">                                
-                                </div>
-                            </div>
-                            <div class="col-lg-12">
-                                <div class="form-group">
-                                    <label class="form-control-label" for="input-latitude">Gambar 2</label>
-                                    <img src="/{{ $pengumumans->gambar2 }}" style="width:350px;">                                
-                                </div>
-                            </div>
-                            <div class="col-lg-12">
-                                <div class="form-group">
-                                    <label class="form-control-label" for="input-latitude">Gambar 3</label>
-                                    <img src="/{{ $pengumumans->gambar3 }}" style="width:350px;">                                
-                                </div>
-                            </div>
-                            <div class="col-lg-12">
-                                <div class="form-group">
-                                    <label class="form-control-label" for="input-latitude">File Dokumen</label>
-                                    <a href="/{{ $pengumumans->download }}" download>Download</a>                            
-                                </div>
-                            </div>
-                            <form action="/kegiatan/{{$kegiatans->id}}" method="POST">
+                        
+                            @for($i=1; $i<=sizeof($gambarKegiatan); $i++)
+                                <form action="/hapusGambar/{{ $gambarKegiatan[$i-1]->id }}" method="POST">
+                                    @csrf
+                                    @method("DELETE")
+                                    <div class="col-lg-12">
+                                        <div class="form-group">
+                                            <img src="/{{ $gambarKegiatan[$i-1]->gambar }}" style="width:180px;">     
+                                            <button type="submit" class="btn btn-danger btn-sm">
+                                                <i class="fa fa-minus"></i>
+                                            </button>   
+                                        </div>
+                                    </div>
+                                </form>
+                            @endfor
+                            <form action="/addPengumuman" method="POST" class="form" enctype="multipart/form-data">
                                 @csrf
-                                @method("DELETE")
-                                <div class="col text-center">
-                                    <button class="btn btn-danger" type="submit">Upload Ulang Pengumuman</button>
+                                <input type="hidden" name="id_kegiatan" id="id_kegiatan" value="{{$kegiatans->id}}">
+                                
+                                <div class="col-lg-12">
+                                    <div class="form-group">
+                                        <input type="file" onchange="readURL(this);" class="form-control" required name="gambar[]" id="gambar" multiple accept="image/*" placeholder="Masukkan FIle Gambar">
+                                        <button class="btn btn-info" type="submit">Tambah Gambar</button>
+                                    </div>
                                 </div>
                             </form>
+                            
+                              <div class="col-lg-12">
+                                  <div class="form-group">
+                                      <label class="form-control-label" for="input-latitude">File Dokumen</label>
+                                      @if(!empty($dokumenKegiatan->dokumen))
+                                      <a href="/{{ $dokumenKegiatan->dokumen }}" download>Download</a>   
+                                      @endif                      
+                                  </div>
+                              </div>
+                              @if(!empty($dokumenKegiatan->id))
+                                <form action="/gantiDokumen/{{ $dokumenKegiatan->id }}" method="POST" class="form" enctype="multipart/form-data">
+                                @csrf
+                                @method("PUT")
+                              @else
+                                <form action="/addPengumuman" method="POST" class="form" enctype="multipart/form-data">
+                                @csrf
+                                
+                              @endif
+                                 
+                                  <input type="hidden" name="id_kegiatan" id="id_kegiatan" value="{{$kegiatans->id}}">
+                                  
+                                  <div class="col-lg-12">
+                                      <div class="form-group">
+                                          <input type="file" onchange="readURL(this);" class="form-control" required name="dokumen" id="dokumen" multiple accept="pdf/*" placeholder="Masukkan FIle Download">
+                                          @if(!empty($dokumenKegiatan->id))
+                                            <button class="btn btn-info" type="submit">Ubah Dokumen</button>
+                                          @else
+                                            <button class="btn btn-info" type="submit">Tambah Dokumen</button>
+                                          @endif
+                                      </div>
+                                  </div>
+                              </form>
+                            
                         @endif
                     </div>
                 </div>

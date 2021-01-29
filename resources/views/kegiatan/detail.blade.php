@@ -22,72 +22,66 @@
       <div class="container">
 
         <div class="portfolio-details-container">
-        @if(    $mytime->year <= date('Y', strtotime($kegiatans->tanggal)) && 
-                $mytime->month <= date('m', strtotime($kegiatans->tanggal)) &&
-                $mytime->day <= date('d', strtotime($kegiatans->tanggal)) && empty($pengumumans)&& 
-                $mytime->hour <= date('H', strtotime($kegiatans->jamselesai)))
+        @if(    empty($gambarKegiatan)&& 
+                $tglSkrng <= date('Y-m-d H:i:s', strtotime("$kegiatans->tanggal $kegiatans->jamselesai")))
                 <div class="owl-carousel portfolio-details-carousel">
                   <img src="/assets3/img/kegiatanDummy.jpg" style="height:500px;" class="img-fluid" alt="">
                 </div>
-        @elseif(    $mytime->year >= date('Y', strtotime($kegiatans->tanggal)) && 
-                  $mytime->month >= date('m', strtotime($kegiatans->tanggal)) &&
-                  $mytime->day >= date('d', strtotime($kegiatans->tanggal)) && !empty($pengumumans)&& 
-                  $mytime->hour >= date('H', strtotime($kegiatans->jamselesai)))
-                  <div class="owl-carousel portfolio-details-carousel">
-                    <img src="/{{ $pengumumans->gambar1 }}" style="height:500px;" class="img-fluid" alt="">
-                  </div>
+        @elseif(  !empty($gambarKegiatan)&& 
+                  $tglSkrng >= date('Y-m-d H:i:s', strtotime("$kegiatans->tanggal $kegiatans->jamselesai")))
+                  
+                    <div class="owl-carousel portfolio-details-carousel">
+                    @for($i=1; $i<=sizeof($gambarKegiatan); $i++)
+                      <img src="/{{ $gambarKegiatan[$i-1]->gambar }}"  class="img-fluid" alt="">
+                      @endfor
+                    </div>
         @else
-        <div class="owl-carousel portfolio-details-carousel">
-                  <img src="/assets3/img/kegiatanDummy.jpg" style="height:500px;" class="img-fluid" alt="">
-                </div>
+              <div class="owl-carousel portfolio-details-carousel">
+                <img src="/assets3/img/kegiatanDummy.jpg" style="height:500px;" class="img-fluid" alt="">
+              </div>
         @endif
           
-
+        
           <div class="portfolio-info">
             <h3>Detail Kegiatan<br>
                 <small>
                     Status  : 
-                    @if(    $mytime->year <= date('Y', strtotime($kegiatans->tanggal)) && 
-                            $mytime->month <= date('m', strtotime($kegiatans->tanggal)) &&
-                            $mytime->day <= date('d', strtotime($kegiatans->tanggal)) && 
-                            $mytime->hour <= date('H', strtotime($kegiatans->jamselesai)))
+                    @if( $tglSkrng <= date('Y-m-d H:i:s', strtotime("$kegiatans->tanggal $kegiatans->jamselesai")))
                         <i style="color:green;">Akan Dilaksanakan</i>
-                    @elseif(  $mytime->year >= date('Y', strtotime($kegiatans->tanggal)) && 
-                              $mytime->month >= date('m', strtotime($kegiatans->tanggal)) &&
-                              $mytime->day >= date('d', strtotime($kegiatans->tanggal)) && 
-                              $mytime->hour >= date('H', strtotime($kegiatans->jamselesai)))
+                    @elseif(  
+                              $tglSkrng >= date('Y-m-d H:i:s', strtotime("$kegiatans->tanggal $kegiatans->jamselesai")))
                         <i style="color:blue;">Telah Selesai</i>
                     @endif
                 </small>
             </h3>
-            @if(    $mytime->year <= date('Y', strtotime($kegiatans->tanggal)) && 
-                    $mytime->month <= date('m', strtotime($kegiatans->tanggal)) &&
-                    $mytime->day <= date('d', strtotime($kegiatans->tanggal)) && 
-                    $mytime->hour <= date('H', strtotime($kegiatans->jamselesai)))
+            @if( $tglSkrng <= date('Y-m-d H:i:s', strtotime("$kegiatans->tanggal $kegiatans->jamselesai")))
                         <ul>
                           <li><strong>Acara</strong>: {{$kegiatans->acara}}</li>
                           <li><strong>Tempat</strong>: {{$kegiatans->tempat}}</li>
+                          <li><strong>Alamat</strong>: {{$kegiatans->alamat}}</li>
+                          <li><strong>Google Maps</strong>: <a href="{{$kegiatans->link_gmaps}}">Link</a></li>
                           <li><strong>Tanggal</strong>: {{date('d F Y', strtotime($kegiatans->tanggal))}}</li>
                           <li><strong>Jam Mulai</strong>: {{$kegiatans->jammulai}}</li>
                           <li><strong>Jam Selesai</strong>: {{$kegiatans->jamselesai}}</li>
                         </ul>
-            @elseif(  $mytime->year >= date('Y', strtotime($kegiatans->tanggal)) && 
-                      $mytime->month >= date('m', strtotime($kegiatans->tanggal)) &&
-                      $mytime->day >= date('d', strtotime($kegiatans->tanggal)) && 
-                      $mytime->hour >= date('H', strtotime($kegiatans->jamselesai)))
+            @elseif(  $tglSkrng >= date('Y-m-d H:i:s', strtotime("$kegiatans->tanggal $kegiatans->jamselesai")))
                         <ul>
                           <li><strong>Acara</strong>: {{$kegiatans->acara}}</li>
                           <li><strong>Tempat</strong>: {{$kegiatans->tempat}}</li>
+                          <li><strong>Alamat</strong>: {{$kegiatans->alamat}}</li>
+                          <li><strong>Google Maps</strong>: <a href="{{$kegiatans->link_gmaps}}">Link</a></li>
                           <li><strong>Tanggal</strong>: {{date('d F Y', strtotime($kegiatans->tanggal))}}</li>
                           <li><strong>Jam Mulai</strong>: {{$kegiatans->jammulai}}</li>
                           <li><strong>Jam Selesai</strong>: {{$kegiatans->jamselesai}}</li>
                           <li><strong>Jumlah Kehadiran</strong>: {{$kehadiranSemua}} Orang</li>
                           <li><strong>Download File Dokumen :</strong></li>
-                          @if(!empty($pengumumans))
-                          <a href="/{{ $pengumumans->download }}" class="btn btn-primary" download>Download File</a>
+                          @if(!empty($dokumenKegiatan))
+                          <a href="/{{ $dokumenKegiatan->dokumen }}" class="btn btn-primary" download>Download File</a>
                           @endif
                         </ul>
+            
             @endif
+
             
           </div>
 
@@ -95,27 +89,20 @@
 
         <div class="portfolio-description">
           
-          @if($mytime->year >= date('Y', strtotime($kegiatans->tanggal)) && 
-                $mytime->month >= date('m', strtotime($kegiatans->tanggal)) &&
-                $mytime->day >= date('d', strtotime($kegiatans->tanggal)) && 
-                $mytime->hour >= date('H', strtotime($kegiatans->jamselesai)))
+          @if( $tglSkrng >= date('Y-m-d H:i:s', strtotime("$kegiatans->tanggal $kegiatans->jamselesai")))
                 <h2>Dokumentasi Kegiatan </h2>
                 <p>
                   Acara telah selesai, berikut merupakan beberapa dokumentasi kegiatan <strong>{{$kegiatans->acara}}</strong>
                 </p>
-                @if(!empty($pengumumans))
+                <!-- @if(!empty($gambarKegiatan))
                   <div class="row">
-                    <div class="col-sm-4">
-                      <img src="/{{ $pengumumans->gambar1 }}" style="width:400px;">
-                    </div>
-                    <div class="col-sm-4">
-                      <img src="/{{ $pengumumans->gambar2 }}" class="img-fluid" alt="" style="width:400px;">
-                    </div>
-                    <div class="col-sm-4">
-                      <img src="/{{ $pengumumans->gambar3 }}" class="img-fluid" alt="" style="width:400px;">
-                    </div>
+                    @for($i=1; $i<=sizeof($gambarKegiatan); $i++)
+                      <div class="col-sm-4">
+                        <img src="/{{ $gambarKegiatan[$i-1]->gambar }}" style="width:400px;">
+                      </div>
+                    @endfor
                 </div>
-                @endif
+                @endif -->
           @elseif (Auth::check() && empty($sudahHadir))
           <h2>Hadiri Kegiatan Ini </h2>
           <p>
@@ -170,6 +157,13 @@
                          <input type="hidden" name="idKegiatan1" id="idKegiatan1" value="{{$kegiatans->id}}">
                          <input type="hidden" name="idKegiatan2" id="idKegiatan2" value="{{$kegiatans->id}}">
                          <input type="hidden" name="idKegiatan3" id="idKegiatan3" value="{{$kegiatans->id}}">
+                         <input type="hidden" name="idKegiatan4" id="idKegiatan4" value="{{$kegiatans->id}}">
+                         <input type="hidden" name="idKegiatan5" id="idKegiatan5" value="{{$kegiatans->id}}">
+                         <input type="hidden" name="idKegiatan6" id="idKegiatan6" value="{{$kegiatans->id}}">
+                         <input type="hidden" name="idKegiatan7" id="idKegiatan7" value="{{$kegiatans->id}}">
+                         <input type="hidden" name="idKegiatan8" id="idKegiatan8" value="{{$kegiatans->id}}">
+                         <input type="hidden" name="idKegiatan9" id="idKegiatan9" value="{{$kegiatans->id}}">
+                         <input type="hidden" name="idKegiatan10" id="idKegiatan10" value="{{$kegiatans->id}}">
                          <div class="form-group">
                               <label for="name" class="col-sm-8">Nama</label>
                               <div class="col-sm-12">
@@ -190,6 +184,13 @@
                                     <option value="1">1</option>
                                     <option value="2">2</option>
                                     <option value="3">3</option>
+                                    <option value="4">4</option>
+                                    <option value="5">5</option>
+                                    <option value="6">6</option>
+                                    <option value="7">7</option>
+                                    <option value="8">8</option>
+                                    <option value="9">9</option>
+                                    <option value="10">10</option>
                                 </select>                                  
                                 <span id="jumlahHadirError" class="alert-message"></span>
                               </div>
@@ -244,10 +245,25 @@
     $("#keterangan1").val('');
     $("#keterangan2").val('');
     $("#keterangan3").val('');
+    $("#keterangan4").val('');
+    $("#keterangan5").val('');
+    $("#keterangan6").val('');
+    $("#keterangan7").val('');
+    $("#keterangan8").val('');
+    $("#keterangan9").val('');
+    $("#keterangan10").val('');
     $("#idKegiatan").val('');
     $("#idKegiatan1").val('');
     $("#idKegiatan2").val('');
     $("#idKegiatan3").val('');
+    $("#idKegiatan4").val('');
+    $("#idKegiatan5").val('');
+    $("#idKegiatan6").val('');
+    $("#idKegiatan7").val('');
+    $("#idKegiatan8").val('');
+    $("#idKegiatan9").val('');
+    $("#idKegiatan10").val('');
+ 
   })
 </script>
 <script>
@@ -261,10 +277,24 @@
         var keterangan1 = $('#keterangan1').val();
         var keterangan2 = $('#keterangan2').val();
         var keterangan3 = $('#keterangan3').val();
+        var keterangan4 = $('#keterangan4').val();
+        var keterangan5 = $('#keterangan5').val();
+        var keterangan6 = $('#keterangan6').val();
+        var keterangan7 = $('#keterangan7').val();
+        var keterangan8 = $('#keterangan8').val();
+        var keterangan9 = $('#keterangan9').val();
+        var keterangan10 = $('#keterangan10').val();
         var idKegiatan = $("#idKegiatan").val();
         var idKegiatan1 = $("#idKegiatan1").val();
         var idKegiatan2 = $("#idKegiatan2").val();
         var idKegiatan3 = $("#idKegiatan3").val();
+        var idKegiatan4 = $("#idKegiatan4").val();
+        var idKegiatan5 = $("#idKegiatan5").val();
+        var idKegiatan6 = $("#idKegiatan6").val();
+        var idKegiatan7 = $("#idKegiatan7").val();
+        var idKegiatan8 = $("#idKegiatan8").val();
+        var idKegiatan9 = $("#idKegiatan9").val();
+        var idKegiatan10 = $("#idKegiatan10").val();
         var nama = $("#nama").val();
         
         let _url     = `/detailKegiatan`;
@@ -282,10 +312,24 @@
             keterangan1: keterangan1,
             keterangan2: keterangan2,
             keterangan3: keterangan3,
+            keterangan4: keterangan4,
+            keterangan5: keterangan5,
+            keterangan6: keterangan6,
+            keterangan7: keterangan7,
+            keterangan8: keterangan8,
+            keterangan9: keterangan9,
+            keterangan10: keterangan10,
             idKegiatan: idKegiatan,
             idKegiatan1: idKegiatan1,
             idKegiatan2: idKegiatan2,
             idKegiatan3: idKegiatan3,
+            idKegiatan4: idKegiatan4,
+            idKegiatan5: idKegiatan5,
+            idKegiatan6: idKegiatan6,
+            idKegiatan7: idKegiatan7,
+            idKegiatan8: idKegiatan8,
+            idKegiatan9: idKegiatan9,
+            idKegiatan10: idKegiatan10,
             _token: _token
             },
 
@@ -297,10 +341,24 @@
                     $("#row_"+id+" td:nth-child(3)").html(response.data.keterangan1);
                     $("#row_"+id+" td:nth-child(4)").html(response.data.keterangan2);
                     $("#row_"+id+" td:nth-child(5)").html(response.data.keterangan3);
-                    $("#row_"+id+" td:nth-child(6)").html(response.data.idKegiatan);
-                    $("#row_"+id+" td:nth-child(7)").html(response.data.idKegiatan1);
-                    $("#row_"+id+" td:nth-child(8)").html(response.data.idKegiatan2);
-                    $("#row_"+id+" td:nth-child(9)").html(response.data.idKegiatan3);
+                    $("#row_"+id+" td:nth-child(6)").html(response.data.keterangan4);
+                    $("#row_"+id+" td:nth-child(7)").html(response.data.keterangan5);
+                    $("#row_"+id+" td:nth-child(8)").html(response.data.keterangan6);
+                    $("#row_"+id+" td:nth-child(9)").html(response.data.keterangan7);
+                    $("#row_"+id+" td:nth-child(10)").html(response.data.keterangan8);
+                    $("#row_"+id+" td:nth-child(11)").html(response.data.keterangan9);
+                    $("#row_"+id+" td:nth-child(12)").html(response.data.keterangan10);
+                    $("#row_"+id+" td:nth-child(13)").html(response.data.idKegiatan);
+                    $("#row_"+id+" td:nth-child(14)").html(response.data.idKegiatan1);
+                    $("#row_"+id+" td:nth-child(15)").html(response.data.idKegiatan2);
+                    $("#row_"+id+" td:nth-child(16)").html(response.data.idKegiatan3);
+                    $("#row_"+id+" td:nth-child(17)").html(response.data.idKegiatan4);
+                    $("#row_"+id+" td:nth-child(18)").html(response.data.idKegiatan5);
+                    $("#row_"+id+" td:nth-child(19)").html(response.data.idKegiatan6);
+                    $("#row_"+id+" td:nth-child(20)").html(response.data.idKegiatan7);
+                    $("#row_"+id+" td:nth-child(21)").html(response.data.idKegiatan8);
+                    $("#row_"+id+" td:nth-child(22)").html(response.data.idKegiatan9);
+                    $("#row_"+id+" td:nth-child(23)").html(response.data.idKegiatan10);
                     // location.reload(true);
                 } else {
                     $('table tfoot').prepend('<tr id="row_'+response.data.id+'"><td></td><td>'+response.data.jumlahHadir+'</td></tr>');
@@ -310,10 +368,24 @@
                 $("#keterangan1").val('');
                 $("#keterangan2").val('');
                 $("#keterangan3").val('');
+                $("#keterangan4").val('');
+                $("#keterangan5").val('');
+                $("#keterangan6").val('');
+                $("#keterangan7").val('');
+                $("#keterangan8").val('');
+                $("#keterangan9").val('');
+                $("#keterangan10").val('');
                 $("#idKegiatan").val('');
                 $("#idKegiatan1").val('');
                 $("#idKegiatan2").val('');
                 $("#idKegiatan3").val('');
+                $("#idKegiatan4").val('');
+                $("#idKegiatan5").val('');
+                $("#idKegiatan6").val('');
+                $("#idKegiatan7").val('');
+                $("#idKegiatan8").val('');
+                $("#idKegiatan9").val('');
+                $("#idKegiatan10").val('');
                 $("#nama").val('');
 
                 $('#post-modal').modal('hide');

@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\Kegiatan;
 use App\Models\Kehadiran;
 use App\Models\Pengumuman;
+use App\Models\GambarKegiatan;
+use App\Models\DokumenKegiatan;
 use Carbon\Carbon;
 use File;
 
@@ -47,7 +49,7 @@ class KegiatanController extends Controller
 
 
         $kegiatan = Kegiatan::updateOrCreate(['id' => $request->id],
-        ['acara' => $request->acara, 'tempat' => $request->tempat, 'tanggal' => $request->tanggal, 'jammulai' => $request->jammulai, 'jamselesai' => $request->jamselesai]);
+        ['acara' => $request->acara, 'tempat' => $request->tempat, 'alamat' => $request->alamat, 'link_gmaps' => $request->link_gmaps, 'tanggal' => $request->tanggal, 'jammulai' => $request->jammulai, 'jamselesai' => $request->jamselesai]);
         
         return response()->json(['code'=>200, 'message'=>'Kabupaten Created successfully','data' => $kegiatan], 200);
     }
@@ -68,8 +70,15 @@ class KegiatanController extends Controller
         $kehadiranSemua = $sudahHadirs->count();
         $kegiatans = Kegiatan::find($id);
         $kehadirans = Kehadiran::where('id_kegiatan',$id)->get();
-        $pengumumans = Pengumuman::where('id_kegiatan',$id)->first();
-        return view("kegiatan.detailAdmin",compact("kegiatans","kehadirans",'pengumumans','kehadiranSemua'));
+        $gambarKegiatan = GambarKegiatan::where('id_kegiatan',$id)->get();
+        $dokumenKegiatan = DokumenKegiatan::where('id_kegiatan',$id)->first();
+        if(!isset($gambarKegiatan) && !isset($dokumenKegiatan)){
+            $checkKegiatan = 1;
+        }else{
+            $checkKegiatan = 0;
+        }
+        return view("kegiatan.detailAdmin",compact("kegiatans","kehadirans",'gambarKegiatan','dokumenKegiatan','kehadiranSemua',
+                    'checkKegiatan'));
     }
     public function showEdit($id){
         $kegiatan = Kegiatan::find($id);
@@ -78,57 +87,53 @@ class KegiatanController extends Controller
     }
 
     public function storePengumuman(Request $request){
-        $current_timestamp = Carbon::now()->timestamp;
+                
+        if($request->hasfile('gambar'))
+        {
+            $current_timestamp = Carbon::now()->timestamp;
+            $i = 1;
+            foreach($request->file('gambar') as $file)
+            {
+                
+                    $name=$file->getClientOriginalName();
+                    $path = 'assets3/img/fotoPengumuman/'. $name;
+                    if(File::exists($path)) {
+                        $name = $current_timestamp.$file->getClientOriginalName();
+                        $path = 'assets3/img/fotoPengumuman/'. $name;
+                    }
+                    
+                    $file->move(public_path().'/assets3/img/fotoPengumuman/', $name);
+
+                    $gambarKegiatan = new GambarKegiatan;
+                    $gambarKegiatan->id_kegiatan = $request->id_kegiatan;
+                    $gambarKegiatan->gambar=$path;
+                    $gambarKegiatan->save();
+                $i++;    
+            }
+            
+        }
+        if($request->hasfile('dokumen')){
+            $current_timestamp = Carbon::now()->timestamp;
+            $fileD = $request->file('dokumen');
+            $nameD=$fileD->getClientOriginalName();
+            $pathD = 'assets3/dokumenKegiatan/'. $nameD;
+            if(File::exists($pathD)) {
+                $nameD = $current_timestamp.$fileD->getClientOriginalName();
+                $pathD = 'assets3/dokumenKegiatan/'. $nameD;
+            }
+            
+            $fileD->move(public_path().'/assets3/dokumenKegiatan/', $nameD);
+
+            $dokumenKegiatan = new DokumenKegiatan;
+            $dokumenKegiatan->id_kegiatan=$request->id_kegiatan;     
+            $dokumenKegiatan->dokumen = $pathD;
+            $dokumenKegiatan->save();
+                   
+            
+        }
         
-        $gmbr1 = $request->file('gambar1');
-        $name1=$gmbr1->getClientOriginalName();
+
         
-        $path1 = 'assets3/img/fotoPengumuman/'. $name1;
-        if(File::exists($path1)) {
-            $name1 = $current_timestamp.$gmbr1->getClientOriginalName();
-            $path1 = 'assets3/img/fotoPengumuman/'. $name1;
-        }
-        // $gmbr1->move(public_path().'/assets3/img/fotoPengumuman/', $name1);
-        $gmbr1->move(public_path().'/assets3/img/fotoPengumuman/', $name1);
-        
-        $gmbr2 = $request->file('gambar2');
-        $name2=$gmbr2->getClientOriginalName();
-        $path2 = 'assets3/img/fotoPengumuman/'. $name2;
-        if(File::exists($path2)) {
-            $name2 = $current_timestamp.$gmbr2->getClientOriginalName();
-            $path2 = 'assets3/img/fotoPengumuman/'. $name2;
-        }
-        $gmbr2->move(public_path().'/assets3/img/fotoPengumuman/', $name2);
-
-        $gmbr3 = $request->file('gambar3');
-        $name3=$gmbr3->getClientOriginalName();
-        $path3 = 'assets3/img/fotoPengumuman/'. $name3;
-        if(File::exists($path3)) {
-            $name3 = $current_timestamp.$gmbr3->getClientOriginalName();
-            $path3 = 'assets3/img/fotoPengumuman/'. $name3;
-        }
-        $gmbr3->move(public_path().'/assets3/img/fotoPengumuman/', $name3);
-
-        $dwnld = $request->file('download');
-        $name4=$dwnld->getClientOriginalName();
-        $path4 = 'assets3/dokumenPengumuman/'. $name4;
-        if(File::exists($path4)) {
-            $name4 = $current_timestamp.$dwnld->getClientOriginalName();
-            $path4 = 'assets3/dokumenPengumuman/'. $name4;
-        }
-        $dwnld->move(public_path().'/assets3/dokumenPengumuman/', $name4);
-
-
-        $pengumumans = new Pengumuman;
-        $pengumumans->id_kegiatan=$request->id_kegiatan;     
-        $pengumumans->isi = $request->isi;
-        $pengumumans->gambar1=$path1;         
-        $pengumumans->gambar2=$path2;  
-        $pengumumans->gambar3=$path3;  
-        $pengumumans->download=$path4;   
-        $pengumumans->save();
-
-        $kegiatan = Kegiatan::get();
         return redirect()->back();
     }
     /**
@@ -169,10 +174,41 @@ class KegiatanController extends Controller
         $kegiatan = Kegiatan::get();
         return redirect()->back();
      }
+
     public function destroy($id)
     {
         $pengumumanDelete = Pengumuman::where('id_kegiatan',$id)->delete();
         $kegiatan = Kegiatan::get();
         return redirect()->back();
     }
+    public function destroyGambarKegiatan($id)
+    {
+        $gambarDelete = GambarKegiatan::find($id);
+        $gambarDelete->delete();
+        return redirect()->back();
+    }
+
+    public function gantiDokumen(Request $request, $id){
+        if($request->hasfile('dokumen')){
+            $current_timestamp = Carbon::now()->timestamp;
+            
+            $fileD = $request->file('dokumen');
+            $nameD=$fileD->getClientOriginalName();
+            $pathD = 'assets3/dokumenKegiatan/'. $nameD;
+            if(File::exists($pathD)) {
+                $nameD = $current_timestamp.$fileD->getClientOriginalName();
+                $pathD = 'assets3/dokumenKegiatan/'. $nameD;
+            }
+            
+            $fileD->move(public_path().'/assets3/dokumenKegiatan/', $nameD);
+
+            $dokumenKegiatan = DokumenKegiatan::find($id);
+            $dokumenKegiatan->id_kegiatan=$request->id_kegiatan;     
+            $dokumenKegiatan->dokumen = $pathD;
+            $dokumenKegiatan->save();
+                   
+            
+        }
+        return redirect()->back();
+     }
 }

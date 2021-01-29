@@ -12,6 +12,6 @@ class Pengumuman extends Model
     protected $primarykey = 'id';
     public $timestamps = false;
     protected $fillable = [
-        'id_kegiatan','tgl_mulai', 'tgl_akhir', 'isi' ,'gambar1', 'gambar2', 'gambar2', 'download'
+        'tgl_tayang', 'tgl_akhir', 'isi' ,'gambar1', 'gambar2', 'gambar3', 'download', 'status'
     ];
 }

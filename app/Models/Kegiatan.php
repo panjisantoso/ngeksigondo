@@ -12,6 +12,6 @@ class Kegiatan extends Model
     protected $primarykey = 'id';
     public $timestamps = false;
     protected $fillable = [
-        'acara', 'tempat', 'tanggal', 'jammulai', 'jamselesai'
+        'acara', 'alamat','link_gmaps', 'tempat', 'tanggal', 'jammulai', 'jamselesai'
     ];
 }

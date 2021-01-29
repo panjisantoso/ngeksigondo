@@ -97,7 +97,26 @@
                                     <i class="ni ni-bullet-list-67 text-blue"></i> {{ __('Kelurahan') }}
                                 </a>
                                 
-                            
+                            @elseif(Auth::user()->is_admin == 2)
+                                <a class="nav-link" href="/pengumuman">
+                                    <i class="ni ni-bullet-list-67 text-blue"></i> {{ __('Pengumuman') }}
+                                </a>
+                                <a class="nav-link" href="/kegiatan">
+                                    <i class="ni ni-bullet-list-67 text-blue"></i> {{ __('Kegiatan') }}
+                                </a>
+                                <a class="nav-link" href="/berita">
+                                    <i class="ni ni-bullet-list-67 text-blue"></i> {{ __('Berita') }}
+                                </a>
+
+                                <a class="nav-link" href="/kabupaten">
+                                    <i class="ni ni-bullet-list-67 text-blue"></i> {{ __('Kabupaten') }}
+                                </a>
+                                <a class="nav-link" href="/kecamatan">
+                                    <i class="ni ni-bullet-list-67 text-blue"></i> {{ __('Kecamatan') }}
+                                </a>
+                                <a class="nav-link" href="/kelurahan">
+                                    <i class="ni ni-bullet-list-67 text-blue"></i> {{ __('Kelurahan') }}
+                                </a>
                             @endif
                         </div>
                 @endif

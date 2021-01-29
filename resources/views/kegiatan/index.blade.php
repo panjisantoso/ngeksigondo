@@ -81,6 +81,8 @@
                   <th scope="col" class="sort" data-sort="name">No</th>
                   <th scope="col" class="sort" data-sort="name">Acara</th>
                   <th scope="col" class="sort" data-sort="name">Tempat</th>
+                  <th scope="col" class="sort" data-sort="name">Alamat</th>
+                  <th scope="col" class="sort" data-sort="name">Link Gmaps</th>
                   <th scope="col" class="sort" data-sort="name">Tanggal</th>
                   <th scope="col" class="sort" data-sort="name">Jam Mulai</th>
                   <th scope="col" class="sort" data-sort="name">Jam Selesai</th>
@@ -98,6 +100,14 @@
                       </td>
                       <td>
                         {{ $kegiatan[$i-1]->tempat }}
+                      </td>
+                      <td>
+                        {{ $kegiatan[$i-1]->alamat }}
+                      </td>
+                      <td>
+                        @if(!empty($kegiatan[$i-1]->link_gmaps))
+                          <a href="{{ $kegiatan[$i-1]->link_gmaps }}">Link Google Maps</a>
+                        @endif
                       </td>
                       <td>
                         {{ $kegiatan[$i-1]->tanggal }}
@@ -154,6 +164,20 @@
                               <div class="col-sm-12">
                                   <input type="text" class="form-control" id="tempat" name="tempat" placeholder="Masukkan Tempat" value="" required>
                                   <span id="tempatError" class="alert-message"></span>
+                              </div>
+                          </div>
+                          <div class="form-group">
+                              <label for="name" class="col-sm-8">Alamat</label>
+                              <div class="col-sm-12">
+                                  <input type="text" class="form-control" id="alamat" name="alamat" placeholder="Masukkan Alamat" value="" required>
+                                  <span id="alamatError" class="alert-message"></span>
+                              </div>
+                          </div>
+                          <div class="form-group">
+                              <label for="name" class="col-sm-8">Link Google maps</label>
+                              <div class="col-sm-12">
+                                  <input type="text" class="form-control" id="link_gmaps" name="link_gmaps" placeholder="Masukkan Link Google Maps" value="" >
+                                  <span id="linkGmpasError" class="alert-message"></span>
                               </div>
                           </div>
                           <div class="form-group">
@@ -223,6 +247,8 @@
     $("#id").val('');
     $("#acara").val('');
     $("#tempat").val('');
+    $("#alamat").val('');
+    $("#link_gmaps").val('');
     $("#tanggal").val('');
     $("#jammulai").val('');
     $("#jamselesai").val('');
@@ -274,6 +300,8 @@
         let _url = `/kegiatans/${id}`;
         $('#acaraError').text('');
         $('#tempatError').text('');
+        $('#alamatError').text('');
+        $('#linkGmapsError').text('');
         $('#tanggalError').text('');
         $('#jamMulaiError').text('');
         $('#jamSelesaiError').text('');
@@ -287,6 +315,8 @@
                 $("#id").val(response.id);
                 $("#acara").val(response.acara);
                 $("#tempat").val(response.tempat);
+                $("#alamat").val(response.alamat);
+                $("#link_gmaps").val(response.link_gmaps);
                 $("#tanggal").val(response.tanggal);
                 $("#jammulai").val(response.jammulai);
                 $("#jamselesai").val(response.jamselesai);
@@ -302,6 +332,8 @@
 function createkegiatan() {
               var acara = $('#acara').val();
               var tempat = $('#tempat').val();
+              var alamat = $('#alamat').val();
+              var link_gmaps = $('#link_gmaps').val();
               var tanggal = $('#tanggal').val();
               var jammulai = $('#jammulai').val();
               var jamselesai = $('#jamselesai').val();
@@ -322,6 +354,8 @@ function createkegiatan() {
                     id: id,
                     acara: acara,
                     tempat: tempat,
+                    alamat: alamat,
+                    link_gmaps: link_gmaps,
                     tanggal: tanggal,
                     jammulai: jammulai,
                     jamselesai: jamselesai,
@@ -337,6 +371,8 @@ function createkegiatan() {
                           $("#row_"+id+" td:nth-child(4)").html(response.data.tanggal);
                           $("#row_"+id+" td:nth-child(5)").html(response.data.jammulai);
                           $("#row_"+id+" td:nth-child(6)").html(response.data.jamselesai);
+                          $("#row_"+id+" td:nth-child(7)").html(response.data.alamat);
+                          $("#row_"+id+" td:nth-child(8)").html(response.data.link_gmaps);
 
                           // location.reload(true);
                         } else {
@@ -344,10 +380,12 @@ function createkegiatan() {
                           // $('table tbody').prepend('<tr id="row_'+response.data.id+'"><td>'+response.data.id+'</td><td>'+response.data.name+'</td><td>'+response.data.email+'</td><td>'+response.data.is_admin+'</td><td><a href="javascript:void(0)" data-id="'+response.data.id+'" class="btn btn-danger" onclick="deleteAccount(event.target)">Delete</a></td></tr>');
 
                           // $('table tfoot').prepend('<tr id="row_'+response.data.id+'"><td>'+response.data.id+'</td><td>'+response.data.name+'</td><td>'+response.data.email+'</td><td>'+response.data.is_admin+'</td><td><a href="javascript:void(0)" data-id="'+response.data.id+'" onclick="editAccount(event.target)" class="btn btn-info">Edit</a><a href="javascript:void(0)" data-id="'+response.data.id+'" class="btn btn-danger" onclick="deleteAccount(event.target)">Delete</a></td></tr>');
-                          $('table tfoot').prepend('<tr id="row_'+response.data.id+'"><td></td><td>'+response.data.acara+'</td><td>'+response.data.tempat+'</td><td>'+response.data.tanggal+'</td><td>'+response.data.jammulai+'</td><td>'+response.data.jamselesai+'</td><td><form action="/kegiatan/" method="GET"><button class="btn btn-primary" type="submit">Detail</button></form><a href="javascript:void(0)" data-id="'+response.data.id+'" onclick="editKegiatan(event.target)" class="btn btn-info">Edit</a><a href="javascript:void(0)" data-id="'+response.data.id+'" class="btn btn-danger" onclick="deleteKegiatan(event.target)">Delete</a></td></tr>');
+                          $('table tfoot').prepend('<tr id="row_'+response.data.id+'"><td></td><td>'+response.data.acara+'</td><td>'+response.data.tempat+'</td><td>'+response.data.alamat+'</td><td>'+response.data.link_gmaps+'</td><td>'+response.data.tanggal+'</td><td>'+response.data.jammulai+'</td><td>'+response.data.jamselesai+'</td><td><form action="/kegiatan/" method="GET"><button class="btn btn-primary" type="submit">Detail</button></form><a href="javascript:void(0)" data-id="'+response.data.id+'" onclick="editKegiatan(event.target)" class="btn btn-info">Edit</a><a href="javascript:void(0)" data-id="'+response.data.id+'" class="btn btn-danger" onclick="deleteKegiatan(event.target)">Delete</a></td></tr>');
                         }
                         $('#acara').val('');
                         $('#tempat').val('');
+                        $('#alamat').val('');
+                        $('#link_gmaps').val('');
                         $('#tanggal').val('');
                         $('#jammulai').val('');
                         $('#jamselesai').val('');
@@ -363,6 +401,8 @@ function createkegiatan() {
                   error: function(response) {
                     $('#acaraError').text(response.responseJSON.errors.acara);
                     $('#tempatError').text(response.responseJSON.errors.tempat);
+                    $('#alamatError').text(response.responseJSON.errors.alamat);
+                    $('#linkGmapsError').text(response.responseJSON.errors.link_gmaps);
                     $('#tanggalError').text(response.responseJSON.errors.tanggal);
                     $('#jamMulaiError').text(response.responseJSON.errors.jammulai);
                     $('#jamSelesaiError').text(response.responseJSON.errors.jamselesai);

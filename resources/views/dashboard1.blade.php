@@ -198,6 +198,29 @@
       </div>
     </section><!-- End About Us Section -->
 
+    <!-- ======= Pengumuman Section ======= -->
+    <section id="why-us" class="why-us">
+      <div class="container">
+      <div class="section-title">
+          <h2>Pengumuman</h2>
+          <!-- <p>Magnam dolores commodi suscipit. Necessitatibus eius consequatur ex aliquid fuga eum quidem. Sit sint consectetur velit. Quisquam quos quisquam cupiditate. Et nemo qui impedit suscipit alias ea. Quia fugiat sit in iste officiis commodi quidem hic quas.</p> -->
+        </div>
+        <div class="row no-gutters">
+          @foreach($pengumumanList as $pengumumanLists)
+          <div class="col-lg-4 col-md-6 content-item">
+            <span>{{ $pengumumanLists->tgl_tayang }}</span>
+            <h4><a href="/detailPengumuman/{{ $pengumumanLists->id }}">PENGUMUMAN</a></h4>
+            <p style="overflow: hidden;display:block;text-overflow: ellipsis;width: 400px; white-space: nowrap;">
+              {{ $pengumumanLists->isi }}
+            </p>
+          </div>
+          @endforeach
+
+        </div>
+
+      </div>
+    </section><!-- End Pengumuman Section -->
+
     <!-- ======= Berita Section ======= -->
     <section id="services" class="services">
       <div class="container">
@@ -264,22 +287,33 @@ Sumber: Antara              </p>
         </div>
 
         <div class="row portfolio-container">
-
-        @for($i=1; $i<=count($kegiatanList); $i++)
-          <div class="col-lg-4 col-md-6 portfolio-item filter-card">
+        @foreach($kegiatanList as $kegiatanLists)
+        
+          @if($tglSkrng <= date('Y-m-d H:i:s', strtotime(" $kegiatanLists->tanggal $kegiatanLists->jamselesai ")))
+            <div class="col-lg-4 col-md-6 portfolio-item filter-akan-datang">
+          @else
+            <div class="col-lg-4 col-md-6 portfolio-item filter-selesai">
+          @endif
             <div class="portfolio-wrap">
-              <a href="/detailKegiatan/{{$kegiatanList[$i-1]->id}}">
-              
-                <img src="assets3/img/kegiatanDummy.jpg" class="img-fluid" alt=""style="width:600px">
-             
+              <a href="/detailKegiatan/{{$kegiatanLists->id}}">
+              @if($tglSkrng <= date('Y-m-d H:i:s', strtotime(" $kegiatanLists->tanggal $kegiatanLists->jamselesai ")))
+                <img src="assets3/img/kegiatanDummy.jpg" class="img-fluid" alt=""style="width:600px; height:250px;" >
+              @else
+                @for($i=1; $i<=sizeof($gambarKegiatan); $i++)
+                  @if($kegiatanLists->id == $gambarKegiatan[$i-1]->id_kegiatan)
+                    <img src="/{{ $gambarKegiatan[$i-1]->gambar }}" class="img-fluid" alt=""style="width:600px; height:250px;">
+                    @break
+                  @endif
+                @endfor
+              @endif
                 <div class="portfolio-info">
-                  <h4>{{ $kegiatanList[$i-1]->acara }} </h4>
-                  <p> {{ $kegiatanList[$i-1]->tanggal }} </p>
+                  <h4>{{ $kegiatanLists->acara }} </h4>
+                  <p> {{ $kegiatanLists->tanggal }} </p>
                 </div>
               </a>
             </div>
           </div>
-        @endfor
+        @endforeach
 
         </div>
 

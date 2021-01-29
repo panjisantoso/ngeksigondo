@@ -31,7 +31,7 @@ Route::get('/detailBerita', 'Dashboard1Controller@lihatBerita');
 Route::get('/detailKegiatan/{id}', 'Dashboard1Controller@lihatKegiatan');
 Route::post('/detailKegiatan', 'Dashboard1Controller@addKehadiran');
 Route::delete('/detailKegiatan/{id}', 'Dashboard1Controller@deleteKehadiran');
-
+Route::get('/detailPengumuman/{id}', 'Dashboard1Controller@lihatPengumuman');
 
 Route::group(['middleware' => ['is_admin']], function () {
         Route::get('home', [Dashboard2Controller::class, 'index'])->name('loginHome');
@@ -59,12 +59,15 @@ Route::group(['middleware' => ['is_admin']], function () {
         Route::resource('/pengumuman','PengumumanController');
         Route::resource('/kegiatan','KegiatanController');
         Route::post('/addPengumuman', 'KegiatanController@storePengumuman');
-        Route::put('/kegiatan/{id}', 'KegiatanController@updateKehadiran');
+        Route::put('/kegiatans/{id}', 'KegiatanController@updateKehadiran');
         Route::get('/kegiatans/{id}', 'KegiatanController@showEdit');
         Route::resource('/berita','BeritaController');
+        Route::delete('/hapusGambar/{id}', 'KegiatanController@destroyGambarKegiatan');
+        Route::put('/gantiDokumen/{id}', 'KegiatanController@gantiDokumen');
+        
 });
 
-        
+
 
 Route::get('/forgot-password', function () {
     return view('auth.forgot-password');

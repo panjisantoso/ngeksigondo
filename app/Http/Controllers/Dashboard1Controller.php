@@ -9,7 +9,8 @@ use Carbon\Carbon;
 use App\Models\Kegiatan;
 use App\Models\Kehadiran;
 use App\Models\Pengumuman;
-
+use App\Models\GambarKegiatan;
+use App\Models\DokumenKegiatan;
 class Dashboard1Controller extends Controller
 {
     /**
@@ -23,12 +24,13 @@ class Dashboard1Controller extends Controller
     {
         
         $mytime = Carbon::now();
-        
+        $tglSkrng = $mytime->toDateTimeString();
         $dateMonth = date('F Y');
         
         $kegiatanList = Kegiatan::get();
-          
-        return view('dashboard1', compact('dateMonth','kegiatanList'));
+        $pengumumanList = Pengumuman::get();
+        $gambarKegiatan = GambarKegiatan::get();
+        return view('dashboard1', compact('dateMonth','kegiatanList','tglSkrng','gambarKegiatan','pengumumanList'));
     }
 
 
@@ -36,13 +38,23 @@ class Dashboard1Controller extends Controller
         return view('berita.list');
     }
 
+    public function lihatPengumuman($id){
+        $mytime = Carbon::now();
+        $tglSkrng = $mytime->toDateTimeString();
+        $pengumumans = Pengumuman::find($id);
+        return view('pengumuman.detail',compact('pengumumans','tglSkrng','mytime'));
+    }
+
     public function lihatKegiatan($id){
         $mytime = Carbon::now();
-        $pengumumans = Pengumuman::where('id_kegiatan',$id)->first();
-     
+        $tglSkrng = $mytime->toDateTimeString();
+        $gambarKegiatan = GambarKegiatan::where('id_kegiatan',$id)->get();
+        $dokumenKegiatan = DokumenKegiatan::where('id_kegiatan',$id)->first();
         $kegiatans = Kegiatan::find($id);
         if(Auth::check()){
-            $sudahHadir = Kehadiran::where('id_anggota', Auth::user()->id)->first();
+            $sudahHadir = Kehadiran::where('id_anggota', Auth::user()->id)
+                        ->where('id_kegiatan',$id)
+                        ->first();
         }else{
             $sudahHadir = 0;
         }
@@ -51,7 +63,8 @@ class Dashboard1Controller extends Controller
         ->where('kehadiran', '1')
         ->get();
         $kehadiranSemua = $sudahHadirs->count();
-        return view('kegiatan.detail',compact('kegiatans','mytime','sudahHadir','kehadiranSemua', 'pengumumans','sudahHadirs'));
+        return view('kegiatan.detail',compact('kegiatans','mytime','sudahHadir','kehadiranSemua', 'gambarKegiatan','sudahHadirs',
+                    'dokumenKegiatan', 'tglSkrng'));
     }
 
     public function addKehadiran(Request $request){
@@ -89,6 +102,55 @@ class Dashboard1Controller extends Controller
             $kehadiranNew->id_kegiatan = $request->idKegiatan;
             $kehadiranNew->id_anggota = Auth::user()->id;
             $kehadiranNew->keterangan = $request->keterangan3;
+            $kehadiranNew->kehadiran = '1';
+            $kehadiranNew->save();
+        }if(!empty($request->keterangan4)){
+            $kehadiranNew = new Kehadiran;
+            $kehadiranNew->id_kegiatan = $request->idKegiatan;
+            $kehadiranNew->id_anggota = Auth::user()->id;
+            $kehadiranNew->keterangan = $request->keterangan4;
+            $kehadiranNew->kehadiran = '1';
+            $kehadiranNew->save();
+        }if(!empty($request->keterangan5)){
+            $kehadiranNew = new Kehadiran;
+            $kehadiranNew->id_kegiatan = $request->idKegiatan;
+            $kehadiranNew->id_anggota = Auth::user()->id;
+            $kehadiranNew->keterangan = $request->keterangan5;
+            $kehadiranNew->kehadiran = '1';
+            $kehadiranNew->save();
+        }if(!empty($request->keterangan6)){
+            $kehadiranNew = new Kehadiran;
+            $kehadiranNew->id_kegiatan = $request->idKegiatan;
+            $kehadiranNew->id_anggota = Auth::user()->id;
+            $kehadiranNew->keterangan = $request->keterangan6;
+            $kehadiranNew->kehadiran = '1';
+            $kehadiranNew->save();
+        }if(!empty($request->keterangan7)){
+            $kehadiranNew = new Kehadiran;
+            $kehadiranNew->id_kegiatan = $request->idKegiatan;
+            $kehadiranNew->id_anggota = Auth::user()->id;
+            $kehadiranNew->keterangan = $request->keterangan7;
+            $kehadiranNew->kehadiran = '1';
+            $kehadiranNew->save();
+        }if(!empty($request->keterangan8)){
+            $kehadiranNew = new Kehadiran;
+            $kehadiranNew->id_kegiatan = $request->idKegiatan;
+            $kehadiranNew->id_anggota = Auth::user()->id;
+            $kehadiranNew->keterangan = $request->keterangan8;
+            $kehadiranNew->kehadiran = '1';
+            $kehadiranNew->save();
+        }if(!empty($request->keterangan9)){
+            $kehadiranNew = new Kehadiran;
+            $kehadiranNew->id_kegiatan = $request->idKegiatan;
+            $kehadiranNew->id_anggota = Auth::user()->id;
+            $kehadiranNew->keterangan = $request->keterangan9;
+            $kehadiranNew->kehadiran = '1';
+            $kehadiranNew->save();
+        }if(!empty($request->keterangan10)){
+            $kehadiranNew = new Kehadiran;
+            $kehadiranNew->id_kegiatan = $request->idKegiatan;
+            $kehadiranNew->id_anggota = Auth::user()->id;
+            $kehadiranNew->keterangan = $request->keterangan10;
             $kehadiranNew->kehadiran = '1';
             $kehadiranNew->save();
         }
