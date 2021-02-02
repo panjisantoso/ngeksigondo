@@ -124,7 +124,12 @@
                 @for($i = 1; $i <= sizeof($kehadirans); $i++)
                 
                     <tr id="row_{{$kehadirans[$i-1]->id}}">
-                    <form action="/kegiatans/{{$kehadirans[$i-1]->id}}" method="POST">
+                    @if(Auth::user()->is_admin == 1)
+                      <form action="/admin/kegiatans/{{$kehadirans[$i-1]->id}}" method="POST">
+                    @elseif(Auth::user()->is_admin == 2)
+                      <form action="/kegiatans/{{$kehadirans[$i-1]->id}}" method="POST">
+                    @endif
+                    
                     @csrf
                     @method("PUT")
                         <td>
@@ -168,7 +173,7 @@
           <div class="card-header border-0">
             <div class="row align-items-center">
               <div class="col">
-              <h2 class="mb-0">Data Pengumuman</h2>
+              <h2 class="mb-0">Data Dokumentasi Kegiatan</h2>
                 
               </div>
               <div class="col text-right">
@@ -180,7 +185,11 @@
           <div class="card-header border-0">
                     <div class="row">
                     @if($checkKegiatan == 1)
-                      <form action="/addPengumuman" method="POST" class="form" enctype="multipart/form-data">
+                      @if(Auth::user()->is_admin == 1)
+                        <form action="/admin/addPengumuman" method="POST" class="form" enctype="multipart/form-data">
+                      @elseif(Auth::user()->is_admin == 2)
+                        <form action="/addPengumuman" method="POST" class="form" enctype="multipart/form-data">
+                      @endif
                           @csrf
                           <input type="hidden" name="id_kegiatan" id="id_kegiatan" value="{{$kegiatans->id}}">
                           
@@ -210,7 +219,11 @@
                             </div>
                         
                             @for($i=1; $i<=sizeof($gambarKegiatan); $i++)
-                                <form action="/hapusGambar/{{ $gambarKegiatan[$i-1]->id }}" method="POST">
+                                @if(Auth::user()->is_admin == 1)
+                                  <form action="/admin/hapusGambar/{{ $gambarKegiatan[$i-1]->id }}" method="POST">
+                                @elseif(Auth::user()->is_admin == 2)
+                                  <form action="/hapusGambar/{{ $gambarKegiatan[$i-1]->id }}" method="POST">
+                                @endif
                                     @csrf
                                     @method("DELETE")
                                     <div class="col-lg-12">
@@ -223,7 +236,11 @@
                                     </div>
                                 </form>
                             @endfor
-                            <form action="/addPengumuman" method="POST" class="form" enctype="multipart/form-data">
+                                @if(Auth::user()->is_admin == 1)
+                                  <form action="/admin/addPengumuman" method="POST" class="form" enctype="multipart/form-data">
+                                @elseif(Auth::user()->is_admin == 2)
+                                  <form action="/addPengumuman" method="POST" class="form" enctype="multipart/form-data">
+                                @endif
                                 @csrf
                                 <input type="hidden" name="id_kegiatan" id="id_kegiatan" value="{{$kegiatans->id}}">
                                 
@@ -244,11 +261,19 @@
                                   </div>
                               </div>
                               @if(!empty($dokumenKegiatan->id))
-                                <form action="/gantiDokumen/{{ $dokumenKegiatan->id }}" method="POST" class="form" enctype="multipart/form-data">
+                                @if(Auth::user()->is_admin == 1)
+                                  <form action="/admin/gantiDokumen/{{ $dokumenKegiatan->id }}" method="POST" class="form" enctype="multipart/form-data">
+                                @elseif(Auth::user()->is_admin == 2)
+                                  <form action="/gantiDokumen/{{ $dokumenKegiatan->id }}" method="POST" class="form" enctype="multipart/form-data">
+                                @endif
                                 @csrf
                                 @method("PUT")
                               @else
-                                <form action="/addPengumuman" method="POST" class="form" enctype="multipart/form-data">
+                                @if(Auth::user()->is_admin == 1)
+                                  <form action="/admin/addPengumuman" method="POST" class="form" enctype="multipart/form-data">
+                                @elseif(Auth::user()->is_admin == 2)
+                                  <form action="/addPengumuman" method="POST" class="form" enctype="multipart/form-data">
+                                @endif
                                 @csrf
                                 
                               @endif

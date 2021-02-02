@@ -69,7 +69,7 @@
                 <h3 class="mb-0">Data Pengumuman</h3>
               </div>
               <div class="col text-right">
-                <a href="javascript:void(0)" class="btn btn-primary" id="create-new-pengumuman" onclick="addPengumuman()">Tambah Pengumuman</a>
+                <a href="/pengumuman/create" class="btn btn-primary" id="create-new-pengumuman">Tambah Pengumuman</a>
               </div>
             </div>
           </div>
@@ -103,16 +103,32 @@
                         {{ $pengumuman[$i-1]->isi }}
                       </td>
                       <td>
-                        <img src="/{{ $pengumuman[$i-1]->gambar1 }}" style="width:300px;" class="img-fluid" alt=""><br>                        
-                        <img src="/{{ $pengumuman[$i-1]->gambar2 }}" style="width:300px;" class="img-fluid" alt=""><br> 
+                        <img src="/{{ $pengumuman[$i-1]->gambar1 }}" style="width:300px;" class="img-fluid" alt=""><br><br>                        
+                        <img src="/{{ $pengumuman[$i-1]->gambar2 }}" style="width:300px;" class="img-fluid" alt=""><br><br> 
                         <img src="/{{ $pengumuman[$i-1]->gambar3 }}" style="width:300px;" class="img-fluid" alt="">
                       </td>
                       <td>
-                        {{ $pengumuman[$i-1]->download }}
+                        @if(!empty($pengumuman[$i-1]->download))
+                        <a href="/{{ $pengumuman[$i-1]->download }}" target="_blank" class="btn btn-primary">Open File</a>
+                        @endif
                       </td>
                       <td>
-                        <a href="javascript:void(0)" data-id="" onclick="editPengumuman(event.target)" class="btn btn-info">Edit</a>
-                        <a href="javascript:void(0)" data-id="" class="btn btn-danger" onclick="deletePengumuman(event.target)">Delete</a>
+                        @if(Auth::user()->is_admin == 1)
+                          <form action="/admin/pengumuman/{{$pengumuman[$i-1]->id}}/edit" method="GET">
+                              <button type="submit" class="btn btn-info">
+                                Edit
+                              </button>
+                          </form>
+                        @elseif(Auth::user()->is_admin == 2)
+                          <form action="/pengumuman/{{$pengumuman[$i-1]->id}}/edit" method="GET">
+                              <button type="submit" class="btn btn-info">
+                                Edit
+                              </button>
+                          </form>
+                        @endif
+                        
+                        <!-- <a href="javascript:void(0)" data-id="{{$pengumuman[$i-1]->id}}" onclick="editPengumuman(event.target)" class="btn btn-info">Edit</a> -->
+                        <a href="javascript:void(0)" data-id="{{$pengumuman[$i-1]->id}}" class="btn btn-danger" onclick="deletePengumuman(event.target)">Delete</a>
                       </td>
                     </tr>
                   @endfor
@@ -137,7 +153,8 @@
                     </button>
                   </div>
                   <div class="modal-body">
-                      <form name="pengumumanForm" class="form-horizontal">
+                      <form name="pengumumanForm" class="form-horizontal" enctype="multipart/form-data">
+                      @csrf
                          <input type="hidden" name="id" id="id">
                           <div class="form-group">
                               <label for="name" class="col-sm-8">Tanggal Tayang</label>
@@ -163,29 +180,28 @@
                           <div class="form-group">
                               <label for="name" class="col-sm-8">Gambar 1</label>
                               <div class="col-sm-12">
-                                  <input type="file" class="form-control" id="gambar1" name="gambar1" placeholder="Masukkan Gambar 1" value="" >
+                                  <input type="file" onchange="readURL(this);" class="form-control" required name="gambar1" id="gambar1" multiple accept="image/*" placeholder="Masukkan FIle Gambar 3">
                                   <span id="gambar1Error " class="alert-message"></span>
                               </div>
                           </div>
                           <div class="form-group">
                               <label for="name" class="col-sm-8">Gambar 2</label>
                               <div class="col-sm-12">
-                                  <input type="file" class="form-control" id="gambar2" name="gambar2" placeholder="Masukkan Gambar 2" value="" >
+                                  <input type="file" onchange="readURL(this);" class="form-control" required name="gambar2" id="gambar2" multiple accept="image/*" placeholder="Masukkan FIle Gambar 3">
                                   <span id="gambar2Error " class="alert-message"></span>
                               </div>
                           </div>
                           <div class="form-group">
                               <label for="name" class="col-sm-8">Gambar 3</label>
                               <div class="col-sm-12">
-                                  <input type="file" class="form-control" id="gambar3" name="gambar3" placeholder="Masukkan Gambar 3" value="" >
+                                  <input type="file" onchange="readURL(this);" class="form-control" required name="gambar3" id="gambar3" multiple accept="image/*" placeholder="Masukkan FIle Gambar 3">
                                   <span id="gambar3Error " class="alert-message"></span>
                               </div>
                           </div>
                           <div class="form-group">
                               <label for="name" class="col-sm-8">File Download</label>
                               <div class="col-sm-12">
-                                  <input type="file" class="form-control" id="download" name="download" placeholder="Masukkan File" value="" required>
-                                  <span id="downloadError " class="alert-message"></span>
+                                  <input type="file" onchange="readURL(this);" class="form-control" required name="download" id="download" multiple accept="pdf/*" placeholder="Masukkan FIle Download">                                  <span id="downloadError " class="alert-message"></span>
                               </div>
                           </div>
                       </form>
@@ -226,7 +242,24 @@
 @endsection
 
 @push('js')
+<script>
+function readURL(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
 
+            reader.onload = function (e) {
+                $('#blah1')
+                    .attr('src', e.target.result)
+                    .width(300)
+                    .height(200);
+                
+            };
+
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+    
+</script>
 <script>
   $("#post-modal").on('hidden.bs.modal', function(e) {
     $("#id").val('');
@@ -238,36 +271,8 @@
     $("#gambar3").val('');
     $("#download").val('');
   })
-</script>
-
-    <script>
-        var table = $('#laravel_crud').DataTable({
-          "lengthMenu": [[10, 20, 25, 50, 100, -1], [10, 20, 25, 50, 100, "All"]],
-          "language": {
-            "paginate": {
-              "previous": "<",
-              "next": ">"
-            }
-          },
-          "columnDefs": [{
-              "searchable": false,
-              "orderable": false,
-              "targets": [0]
-          }],
-          "order": [[ 1, 'asc' ]]
-        });
-        table.on( 'order.dt search.dt', function () {
-          table.column(0, {search:'applied', order:'applied'}).nodes().each( function (cell, i) {
-                cell.innerHTML = i+1;
-            });
-        }).draw();
-
-            function addPengumuman() {
-              $("#id").val();
-              $('#post-modal').modal('show');
-            }
-          
-            function editPengumuman(event) {
+  
+  function editPengumuman(event) {
               var id  = $(event).data("id");
               let _url = `/pengumuman/${id}`;
               $('#tglTayangError').text('');
@@ -298,6 +303,36 @@
                 }
               });
             }
+</script>
+
+    <script>
+        var table = $('#laravel_crud').DataTable({
+          "lengthMenu": [[10, 20, 25, 50, 100, -1], [10, 20, 25, 50, 100, "All"]],
+          "language": {
+            "paginate": {
+              "previous": "<",
+              "next": ">"
+            }
+          },
+          "columnDefs": [{
+              "searchable": false,
+              "orderable": false,
+              "targets": [0]
+          }],
+          "order": [[ 1, 'asc' ]]
+        });
+        table.on( 'order.dt search.dt', function () {
+          table.column(0, {search:'applied', order:'applied'}).nodes().each( function (cell, i) {
+                cell.innerHTML = i+1;
+            });
+        }).draw();
+
+            function addPengumuman() {
+              $("#id").val();
+              $('#post-modal').modal('show');
+            }
+          
+            
           
             function createPengumuman() {
               var tgl_tayang = $('#tgl_tayang').val();
@@ -390,32 +425,64 @@
         // });
       
     </script>
-  <script>
-function deletePengumuman(event) {
-              $('#delete-modal').modal('show');
-              var id  = $(event).data("id");
-              let _url = `/pengumuman/${id}`;
-              let _token   = $('meta[name="csrf-token"]').attr('content');
-              $(document).on('click', '#btnDelete', function(){
-                $.ajax({
-                  url: _url,
-                  type: 'PUT',
-                  data: {
-                    _token: _token
-                  },
-                  beforeSend: function(){
-                    $("#loader").show();
-                    $('#delete-modal').modal('hide');
-                  },
-                  success: function(response) {
-                    $("#row_"+id).remove();
-                    $("#loader").hide();
-                    console.log(response.data);
-                  }
-                });
+    @if(Auth::user()->is_admin == 1)
+    <script>
+  
+      function deletePengumuman(event) {
+            $('#delete-modal').modal('show');
+            var id  = $(event).data("id");
+            let _url = `/admin/pengumuman/${id}`;
+            let _token   = $('meta[name="csrf-token"]').attr('content');
+            $(document).on('click', '#btnDelete', function(){
+              $.ajax({
+                url: _url,
+                type: 'PUT',
+                data: {
+                  _token: _token
+                },
+                beforeSend: function(){
+                  $("#loader").show();
+                  $('#delete-modal').modal('hide');
+                },
+                success: function(response) {
+                  $("#row_"+id).remove();
+                  $("#loader").hide();
+                  console.log(response.data);
+                }
               });
+            });
+          }
+      </script>
+    @elseif(Auth::user()->is_admin == 2)
+    <script>
+  
+  function deletePengumuman(event) {
+        $('#delete-modal').modal('show');
+        var id  = $(event).data("id");
+        let _url = `/pengumuman/${id}`;
+        let _token   = $('meta[name="csrf-token"]').attr('content');
+        $(document).on('click', '#btnDelete', function(){
+          $.ajax({
+            url: _url,
+            type: 'PUT',
+            data: {
+              _token: _token
+            },
+            beforeSend: function(){
+              $("#loader").show();
+              $('#delete-modal').modal('hide');
+            },
+            success: function(response) {
+              $("#row_"+id).remove();
+              $("#loader").hide();
+              console.log(response.data);
             }
+          });
+        });
+      }
   </script>
+    @endif
+ 
     <!-- Argon Scripts -->
     <!-- Core -->
     <script src="{{ asset('assets') }}/vendor/js-cookie/js.cookie.js"></script>

@@ -69,7 +69,13 @@
                 <h3 class="mb-0">Data Berita</h3>
               </div>
               <div class="col text-right">
-                <a href="javascript:void(0)" class="btn btn-primary" id="create-new-layanan" onclick="addLayanan()">Tambah Berita</a>
+                @if(Auth::user()->is_admin == 1)
+                <a href="/admin/berita/create" class="btn btn-primary" id="create-new-berita">Tambah Berita</a>
+                @elseif(Auth::user()->is_admin == 2)
+                <a href="/berita/create" class="btn btn-primary" id="create-new-berita">Tambah Berita</a>
+                @endif
+                <!-- <a href="/berita/create" class="btn btn-primary" id="create-new-berita">Tambah Berita</a> -->
+                <!-- <a href="javascript:void(0)" class="btn btn-primary" id="create-new-berita" onclick="addBerita()">Tambah Berita</a> -->
               </div>
             </div>
           </div>
@@ -87,30 +93,44 @@
                 </tr>
               </thead>
               <tbody class="list">
-                
-                    <tr id="">
+                @for($i = 1; $i <= sizeof($berita); $i++)
+                    <tr id="row_{{$berita[$i-1]->id}}">
                       <td>
-                        1.
+                        {{ $i }}
                       </td>
                       <td>
-                        HUT Denpasar Disemarakkan Wayang Kulit Semalam Suntuk
+                      {{ $berita[$i-1]->judul_berita }}
                       </td>
                       <td>
-                      Perayaan Hari Ulang Tahun ke-225 Kota Denpasar disemarakkan...
+                      {{ $berita[$i-1]->isi_berita }}
                         
                       </td>
                       <td>
-                      2021-01-14
+                      {{ $berita[$i-1]->tanggal_berita }}
                       </td>
                       <td>
                         
                       </td>
                       <td>
-                        <a href="javascript:void(0)" data-id="" onclick="editLayanan(event.target)" class="btn btn-info">Edit</a>
-                        <a href="javascript:void(0)" data-id="" class="btn btn-danger" onclick="deleteLayanan(event.target)">Delete</a>
+                        @if(Auth::user()->is_admin == 1)
+                          <form action="/admin/berita/{{$berita[$i-1]->id}}/edit" method="GET">
+                              <button type="submit" class="btn btn-info">
+                                Edit
+                              </button>
+                          </form>
+                        @elseif(Auth::user()->is_admin == 2)
+                          <form action="/berita/{{$berita[$i-1]->id}}/edit" method="GET">
+                                <button type="submit" class="btn btn-info">
+                                  Edit
+                                </button>
+                            </form>
+                        @endif
+                        
+                        <!-- <a href="javascript:void(0)" data-id="{{$berita[$i-1]->id}}" onclick="editBerita(event.target)" class="btn btn-info">Edit</a> -->
+                        <a href="javascript:void(0)" data-id="{{$berita[$i-1]->id}}" class="btn btn-danger" onclick="deleteBerita(event.target)">Delete</a>
                       </td>
                     </tr>
-                  
+                  @endfor
               </tbody>
               <tfoot style="background-color: lavender;">
 
@@ -132,33 +152,34 @@
                     </button>
                   </div>
                   <div class="modal-body">
-                      <form name="layananForm" class="form-horizontal">
-                         <input type="hidden" name="layanan_id" id="layanan_id">
+                      <form name="beritaForm" class="form-horizontal">
+                         <input type="hidden" name="id" id="id">
                           <div class="form-group">
                               <label for="name" class="col-sm-8">Judul Berita</label>
                               <div class="col-sm-12">
-                                  <input type="text" class="form-control" id="nama_layanan" name="nama_layanan" placeholder="Masukkan Judul Berita" value="" required>
-                                  <span id="namaLayananError" class="alert-message"></span>
+                                  <input type="text" class="form-control" id="judul_berita" name="judul_berita" placeholder="Masukkan Judul Berita" value="" required>
+                                  <span id="judulBeritaError" class="alert-message"></span>
                               </div>
                           </div>
                           <div class="form-group">
                               <label for="name" class="col-sm-8">Isi Berita</label>
                               <div class="col-sm-12">
-                              <textarea name="article-ckeditor" id="article-ckeditor" rows="9"  class="form-control" ></textarea>                                  <span id="namaLayananError" class="alert-message"></span>
+                              <textarea name="isi_berita" id="isi_berita" rows="9"  class="form-control" placeholder="Masukkan Isi Berita"></textarea>                                  
+                              <span id="isiBeritaError" class="alert-message"></span>
                               </div>
                           </div>
                           
                           <div class="form-group">
-                              <label for="name" class="col-sm-8">Gambar</label>
+                              <label for="name" class="col-sm-8">Tanggal Berita</label>
                               <div class="col-sm-12">
-                                  <input type="file" class="form-control" id="nama_layanan" name="nama_layanan" placeholder="Masukkan Gambar" value="" required>
-                                  <span id="namaLayananError" class="alert-message"></span>
+                                  <input type="date" class="form-control" id="tanggal_berita" name="tanggal_berita" placeholder="Masukkan Tanggal" value="" required>
+                                  <span id="tanggalBeritaError" class="alert-message"></span>
                               </div>
                           </div>
                       </form>
                   </div>
                   <div class="modal-footer">
-                      <button type="button" class="btn btn-primary" onclick="createLayanan()">Confirm</button>
+                      <button type="button" class="btn btn-primary" onclick="createBerita()">Confirm</button>
                   </div>
               </div>
             </div>
@@ -196,11 +217,76 @@
 
 <script>
   $("#post-modal").on('hidden.bs.modal', function(e) {
-    $("#layanan_id").val('');
-    $("#nama_layanan").val('');
+    $("#id").val('');
+    $("#isi_berita").val('');
+    $("#judul_berita").val('');
+    $("#tanggal_berita").val('');
   })
 </script>
+<script>
+  function createBerita() {
+    var judul_berita = $('#judul_berita').val();
+    var isi_berita = $('#isi_berita').val();
+    var tanggal_berita = $('#tanggal_berita').val();
+    var id = $('#id').val();
 
+    let _url     = `/admin/berita`;
+    let _token   = $('meta[name="csrf-token"]').attr('content');
+
+    if(judul_berita!=""){
+      $('#post-modal').modal('hide');
+
+      $("#loader").show();
+
+      $.ajax({
+        url: _url,
+        type: "POST",
+        data: {
+          id: id,
+          judul_berita: judul_berita,
+          isi_berita: isi_berita,
+          tanggal_berita: tanggal_berita,
+          _token: _token
+        },
+
+        success: function(response) {
+            if(response.code == 200) {
+
+              if(id != ""){
+                $("#row_"+id+" td:nth-child(2)").html(response.data.judul_berita);
+                $("#row_"+id+" td:nth-child(3)").html(response.data.isi_berita);
+                $("#row_"+id+" td:nth-child(4)").html(response.data.tanggal_berita);
+
+                // location.reload(true);
+              } else {
+                // $('table tbody').prepend('<tr id="row_'+response.data.id+'"><td>'+response.data.id+'</td><td>'+response.data.name+'</td><td>'+response.data.email+'</td><td>'+response.data.is_admin+'</td><td><a href="javascript:void(0)" data-id="'+response.data.id+'" onclick="editAccount(event.target)" class="btn btn-info">Edit</a><a href="javascript:void(0)" data-id="'+response.data.id+'" class="btn btn-danger" onclick="deleteAccount(event.target)">Delete</a></td></tr>');
+                // $('table tbody').prepend('<tr id="row_'+response.data.id+'"><td>'+response.data.id+'</td><td>'+response.data.name+'</td><td>'+response.data.email+'</td><td>'+response.data.is_admin+'</td><td><a href="javascript:void(0)" data-id="'+response.data.id+'" class="btn btn-danger" onclick="deleteAccount(event.target)">Delete</a></td></tr>');
+
+                // $('table tfoot').prepend('<tr id="row_'+response.data.id+'"><td>'+response.data.id+'</td><td>'+response.data.name+'</td><td>'+response.data.email+'</td><td>'+response.data.is_admin+'</td><td><a href="javascript:void(0)" data-id="'+response.data.id+'" onclick="editAccount(event.target)" class="btn btn-info">Edit</a><a href="javascript:void(0)" data-id="'+response.data.id+'" class="btn btn-danger" onclick="deleteAccount(event.target)">Delete</a></td></tr>');
+                $('table tfoot').prepend('<tr id="row_'+response.data.id+'"><td></td><td>'+response.data.judul_berita+'</td><td>'+response.data.isi_berita+'</td><td>'+response.data.tanggal_berita+'</td><td><a href="javascript:void(0)" data-id="'+response.data.id+'" onclick="editBerita(event.target)" class="btn btn-info">Edit</a><a href="javascript:void(0)" data-id="'+response.data.id+'" class="btn btn-danger" onclick="deleteBerita(event.target)">Delete</a></td></tr>');
+              }
+              $('#judul_berita').val('');
+              $('#isi_berita').val('');
+              $('#tanggal_berita').val('');
+
+              $('#post-modal').modal('hide');
+
+              // location.reload(true);
+
+              $("#loader").hide();
+            }
+
+        },
+        error: function(response) {
+          $('#judulBeritaError').text(response.responseJSON.errors.judul_berita);
+          // console.log(JSON.stringify(response.responseJSON.errors));
+        }
+      });
+    }else{
+      alert('Please fill all the field')
+    }
+  }
+</script>
     <script>
         var table = $('#laravel_crud').DataTable({
           "lengthMenu": [[10, 20, 25, 50, 100, -1], [10, 20, 25, 50, 100, "All"]],
@@ -223,15 +309,18 @@
             });
         }).draw();
 
-            function addLayanan() {
-              $("#layanan_id").val();
+            function addBerita() {
+              $("#id").val();
+             
               $('#post-modal').modal('show');
             }
           
-            function editLayanan(event) {
+            function editBerita(event) {
               var id  = $(event).data("id");
-              let _url = `/admin/layanan/${id}`;
-              $('#namaLayananError').text('');
+              let _url = `/admin/berita/${id}`;
+              $('#judulBeritaError').text('');
+              $('#isiBeritaError').text('');
+              $('#tanggalBeritaError').text('');
               $("#loader").show();
               
               $.ajax({
@@ -239,8 +328,10 @@
                 type: "GET",
                 success: function(response) {
                     if(response) {
-                      $("#layanan_id").val(response.id);
-                      $("#nama_layanan").val(response.nama_layanan);
+                      $("#id").val(response.id);
+                      $("#judul_berita").val(response.judul_berita);
+                      $("#isi_berita").val(response.isi_berita);
+                      $("#tanggal_berita").val(response.tanggal_berita);
                       $('#post-modal').modal('show');
                       $("#loader").hide();
                     }
@@ -248,70 +339,17 @@
               });
             }
           
-            function createLayanan() {
-              var nama_layanan = $('#nama_layanan').val();
-              var id = $('#layanan_id').val();
+            
           
-              let _url     = `/admin/layanan`;
-              let _token   = $('meta[name="csrf-token"]').attr('content');
-          
-              if(nama_layanan!=""){
-                $('#post-modal').modal('hide');
-
-                $("#loader").show();
-          
-                $.ajax({
-                  url: _url,
-                  type: "POST",
-                  data: {
-                    layanan_id: id,
-                    nama_layanan: nama_layanan,
-                    _token: _token
-                  },
-
-                  success: function(response) {
-                      if(response.code == 200) {
-
-                        if(id != ""){
-                          $("#row_"+id+" td:nth-child(2)").html(response.data.nama_layanan);
-
-                          // location.reload(true);
-                        } else {
-                          // $('table tbody').prepend('<tr id="row_'+response.data.id+'"><td>'+response.data.id+'</td><td>'+response.data.name+'</td><td>'+response.data.email+'</td><td>'+response.data.is_admin+'</td><td><a href="javascript:void(0)" data-id="'+response.data.id+'" onclick="editAccount(event.target)" class="btn btn-info">Edit</a><a href="javascript:void(0)" data-id="'+response.data.id+'" class="btn btn-danger" onclick="deleteAccount(event.target)">Delete</a></td></tr>');
-                          // $('table tbody').prepend('<tr id="row_'+response.data.id+'"><td>'+response.data.id+'</td><td>'+response.data.name+'</td><td>'+response.data.email+'</td><td>'+response.data.is_admin+'</td><td><a href="javascript:void(0)" data-id="'+response.data.id+'" class="btn btn-danger" onclick="deleteAccount(event.target)">Delete</a></td></tr>');
-
-                          // $('table tfoot').prepend('<tr id="row_'+response.data.id+'"><td>'+response.data.id+'</td><td>'+response.data.name+'</td><td>'+response.data.email+'</td><td>'+response.data.is_admin+'</td><td><a href="javascript:void(0)" data-id="'+response.data.id+'" onclick="editAccount(event.target)" class="btn btn-info">Edit</a><a href="javascript:void(0)" data-id="'+response.data.id+'" class="btn btn-danger" onclick="deleteAccount(event.target)">Delete</a></td></tr>');
-                          $('table tfoot').prepend('<tr id="row_'+response.data.id+'"><td></td><td>'+response.data.nama_layanan+'</td><td><a href="javascript:void(0)" data-id="'+response.data.id+'" onclick="editLayanan(event.target)" class="btn btn-info">Edit</a><a href="javascript:void(0)" data-id="'+response.data.id+'" class="btn btn-danger" onclick="deleteLayanan(event.target)">Delete</a></td></tr>');
-                        }
-                        $('#nama_layanan').val('');
-          
-                        $('#post-modal').modal('hide');
-
-                        // location.reload(true);
-    
-                        $("#loader").hide();
-                      }
-
-                  },
-                  error: function(response) {
-                    $('#namaLayananError').text(response.responseJSON.errors.nama_layanan);
-                    // console.log(JSON.stringify(response.responseJSON.errors));
-                  }
-                });
-              }else{
-                alert('Please fill all the field')
-              }
-            }
-          
-            function deleteLayanan(event) {
+            function deleteBerita(event) {
               $('#delete-modal').modal('show');
               var id  = $(event).data("id");
-              let _url = `/admin/layanan/${id}`;
+              let _url = `/admin/berita/${id}`;
               let _token   = $('meta[name="csrf-token"]').attr('content');
               $(document).on('click', '#btnDelete', function(){
                 $.ajax({
                   url: _url,
-                  type: 'PUT',
+                  type: 'DELETE',
                   data: {
                     _token: _token
                   },
@@ -340,7 +378,5 @@
     <script src="{{ asset('argon') }}/js/argon.js?v=1.2.0"></script>
 
     <script type="text/javascript" src="{{ asset('assets2') }}/js/popper.min.js"></script>
-    <script>
-        CKEDITOR.replace( 'article-ckeditor' );
-    </script>
+    
 @endpush

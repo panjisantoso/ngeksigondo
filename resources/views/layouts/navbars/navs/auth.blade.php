@@ -1,3 +1,6 @@
+@push('css')
+
+@endpush
 <!-- ======= Top Bar ======= -->
 <div id="topbar" class="d-none d-lg-flex align-items-center fixed-top">
     <div class="container d-flex justify-content-between">
@@ -24,7 +27,7 @@
 
       <nav class="nav-menu d-none d-lg-block">
         <ul>
-          <li class="active"><a href="index.html">Home</a></li>
+          <li class="active"><a href="/">Home</a></li>
           <li><a href="#about">Profil</a></li>
           <li><a href="#services">Berita</a></li>
           <li><a href="#portfolio">Kegiatan</a></li>
@@ -32,8 +35,49 @@
           <!-- <li><a href="/layanan">Master Data</a></li>      -->
 
           <li>
-            <a href="{{ route('logout') }}" onclick="event.preventDefault();
-            document.getElementById('logout-form').submit();">{{ __('Logout') }}</a>
+            <a onclick="myFunction()"  class="dropdown-toggle">
+                {{ Auth::user()->name }}
+            </a>
+
+            <div id="myDropdown" class="dropdown-content" style="">
+              @if(Auth::user()->is_admin == 1)
+              <a class="dropdown-item" href="/admin/profile">
+                    <i class="ni ni-circle-08"></i>
+                    <span>{{ __('Profile') }}</span>
+                </a>
+                @elseif(Auth::user()->is_admin == 2)
+                <a class="dropdown-item" href="/profile">
+                    <i class="ni ni-circle-08"></i>
+                    <span>{{ __('Profile') }}</span>
+                </a>
+                @elseif(Auth::user()->is_admin == 0)
+                <a class="dropdown-item" href="/profiles">
+                    <i class="ni ni-circle-08"></i>
+                    <span>{{ __('Profile') }}</span>
+                </a>
+                @endif
+
+                
+                @if(Auth::user()->is_admin == 1)
+                  <a class="dropdown-item" href="/admin/anggota">
+                      <i class="ni ni-circle-08"></i>
+                      <span>{{ __('Master Data') }}</span>
+                  </a>
+                @elseif (Auth::user()->is_admin == 2)
+                  <a class="dropdown-item" href="/kegiatan">
+                      <i class="ni ni-circle-08"></i>
+                      <span>{{ __('Master Data') }}</span>
+                  </a>
+                @endif
+                <a class="dropdown-item" href="{{ route('logout') }}"
+                    onclick="event.preventDefault();
+                                    document.getElementById('logout-form').submit();">
+                    <i class="ni ni-button-power"></i>
+                    <span>{{ __('Logout') }}</span>
+                </a>
+            </div>
+            <!-- <a href="{{ route('logout') }}" onclick="event.preventDefault();
+            document.getElementById('logout-form').submit();">{{ __('Logout') }}</a> -->
           </li>
           
           <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">

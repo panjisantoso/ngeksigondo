@@ -19,7 +19,8 @@ class ProfileController extends Controller
     public function index()
     {
         
-        return view("profil");
+        $profile = Auth::user();
+        return view("profile", compact("profile"));
     }
 
     public function updateProfile(Request $request, $id)
@@ -46,6 +47,11 @@ class ProfileController extends Controller
 
             $profile->name = $request->name; 
             $profile->email = $request->email;
+            $profile->tempat_lahir = $request->tempat_lahir;
+            $profile->tgl_lahir = $request->tgl_lahir;
+            $profile->no_hp = $request->no_hp;
+            $profile->nik = $request->nik;
+            $profile->jenis_kelamin = $request->jenis_kelamin;
 
             $profile->save();
 
@@ -57,6 +63,11 @@ class ProfileController extends Controller
 
             $profile->name = $request->name; 
             $profile->email = $request->email;
+            $profile->tempat_lahir = $request->tempat_lahir;
+            $profile->tgl_lahir = $request->tgl_lahir;
+            $profile->no_hp = $request->no_hp;
+            $profile->nik = $request->nik;
+            $profile->jenis_kelamin = $request->jenis_kelamin;
 
             $profile->save();
 

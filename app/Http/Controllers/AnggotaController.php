@@ -4,7 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
-
+use Illuminate\Support\Facades\Hash;
+use Carbon\Carbon;
 class AnggotaController extends Controller
 {
     /**
@@ -25,34 +26,8 @@ class AnggotaController extends Controller
      */
     public function create()
     {
-        $request->validate([
-            'nik' => ['required', 'string', 'max:30', 'unique:users'],
-            'name' => ['required', 'string', 'max:100'],
-            'tempat_lahir' => ['required', 'string', 'max:100'],
-            'tgl_lahir' => ['required', 'date'],
-            'jenis_kelamin' => 'required',
-            'no_hp' => ['required', 'int'],
-            'password' => ['required', 'string', 'max:100'],
-        ]);
-            
-
-        $anggota = User::updateOrCreate(['id' => $request->id],
-            [
-                'nik' => $request->nik, 
-                'name' => $request->name, 
-                'tempat_lahir' => $request->tempat_lahir, 
-                'tgl_lahir' => $request->tgl_lahir, 
-                'jenis_kelamin' => $request->jenis_kelamin, 
-                'no_hp' => $request->no_hp, 
-                'password' => Hash::make($request->password), 
-                'status' => "1",
-                'is_admin' => "0"
-            ]
-        );
-        
-        return response()->json(['code'=>200, 'message'=>'Anggota Created successfully','data' => $anggota], 200);
+        return view('anggota.add');
     }
-
     /**
      * Store a newly created resource in storage.
      *
@@ -61,7 +36,45 @@ class AnggotaController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // $request->validate([
+        //     'nik' => ['required', 'string', 'max:30', 'unique:users'],
+        //     'name' => ['required', 'string', 'max:100'],
+        //     'tempat_lahir' => ['required', 'string', 'max:100'],
+        //     'tgl_lahir' => ['required', 'date'],
+        //     'jenis_kelamin' => 'required',
+        //     'no_hp' => ['required', 'int'],
+        //     'password' => ['required', 'string', 'max:100'],
+        // ]);
+        // $anggota = User::updateOrCreate();
+        // $anggota->id = $request->id;
+        // $anggota->nik = $request->nik; 
+        // $anggota->name = $request->name; 
+        // $anggota->tempat_lahir = $request->tempat_lahir; 
+        // $anggota->tgl_lahir = $request->tgl_lahir; 
+        // $anggota->jenis_kelamin = $request->jenis_kelamin;
+        // $anggota->no_hp = $request->no_hp; 
+        // $anggota->password = Hash::make($request->password);
+        // $anggota->status = "1";
+        // $anggota->is_admin = $request->is_admin;
+        // $anggota->save();
+        
+            $anggota = User::updateOrCreate(['id' => $request->id],
+                [
+                    'nik' => $request->nik, 
+                    'name' => $request->name, 
+                    'tempat_lahir' => $request->tempat_lahir, 
+                    'tgl_lahir' => $request->tgl_lahir, 
+                    'jenis_kelamin' => $request->jenis_kelamin, 
+                    'no_hp' => $request->no_hp, 
+                    'is_admin' => $request->is_admin,
+                    'password' => Hash::make($request->password),
+                    'status' => '1',
+                    'email' => $request->email
+                ]
+            );
+       
+        return redirect('/admin/anggota');
+    
     }
 
     /**
@@ -99,7 +112,23 @@ class AnggotaController extends Controller
     {
         //
     }
-
+    public function pengurusSet(Request $request, $id)
+    {
+        $anggota = User::find($id);
+        $anggota->is_admin = "2";
+        $anggota->save();
+     
+        return redirect('/admin/anggota');
+    }
+    
+    public function anggotaSet(Request $request, $id)
+    {
+        $anggota = User::find($id);
+        $anggota->is_admin = "0";
+        $anggota->save();
+     
+        return redirect('/admin/anggota');
+    }
     /**
      * Remove the specified resource from storage.
      *
@@ -108,10 +137,10 @@ class AnggotaController extends Controller
      */
     public function destroy($id)
     {
-        $kabupaten = Kabupaten::find($id);
-        $kabupaten->status = "0";
-        $kabupaten->save();
+        $anggota = User::find($id);
+        $anggota->status = "0";
+        $anggota->save();
      
-        return response()->json(['success'=>'Kabupaten deleted successfully']);
+        return response()->json(['success'=>'anggota deleted successfully']);
     }
 }

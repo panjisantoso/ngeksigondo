@@ -6,7 +6,7 @@
         </button>
         <!-- Brand -->
         <a class="navbar-brand pt-0" href="">
-            <img style="width: 90px; max-height:6rem; margin-top:10px; bottom:100px;  " src="assets3/img/logo.png" class="navbar-brand-img" alt="...">
+            <img style="width: 90px; max-height:6rem; margin-top:10px; bottom:100px;  " src="../assets3/img/logo.png" class="navbar-brand-img" alt="...">
         </a>
         <!-- User -->
         <ul class="nav align-items-center d-md-none">
@@ -74,26 +74,26 @@
                     </button>
                         <div class="dropdown-container">
                             @if (Auth::user()->is_admin == 1)
-                                <a class="nav-link" href="/pengumuman">
+                                <a class="nav-link" href="/admin/pengumuman">
                                     <i class="ni ni-bullet-list-67 text-blue"></i> {{ __('Pengumuman') }}
                                 </a>
-                                <a class="nav-link" href="/anggota">
+                                <a class="nav-link" href="/admin/anggota">
                                     <i class="ni ni-bullet-list-67 text-blue"></i> {{ __('Anggota') }}
                                 </a>
-                                <a class="nav-link" href="/kegiatan">
+                                <a class="nav-link" href="/admin/kegiatan">
                                     <i class="ni ni-bullet-list-67 text-blue"></i> {{ __('Kegiatan') }}
                                 </a>
-                                <a class="nav-link" href="/berita">
+                                <a class="nav-link" href="/admin/berita">
                                     <i class="ni ni-bullet-list-67 text-blue"></i> {{ __('Berita') }}
                                 </a>
 
-                                <a class="nav-link" href="/kabupaten">
+                                <a class="nav-link" href="/admin/kabupaten">
                                     <i class="ni ni-bullet-list-67 text-blue"></i> {{ __('Kabupaten') }}
                                 </a>
-                                <a class="nav-link" href="/kecamatan">
+                                <a class="nav-link" href="/admin/kecamatan">
                                     <i class="ni ni-bullet-list-67 text-blue"></i> {{ __('Kecamatan') }}
                                 </a>
-                                <a class="nav-link" href="/kelurahan">
+                                <a class="nav-link" href="/admin/kelurahan">
                                     <i class="ni ni-bullet-list-67 text-blue"></i> {{ __('Kelurahan') }}
                                 </a>
                                 

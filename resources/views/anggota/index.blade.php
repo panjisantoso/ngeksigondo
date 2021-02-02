@@ -69,7 +69,10 @@
                 <h3 class="mb-0">Data Anggota</h3>
               </div>
               <div class="col text-right">
-                <a href="javascript:void(0)" class="btn btn-primary" id="create-new-anggota" onclick="addAnggota()">Tambah Anggota</a>
+                @if(Auth::user()->is_admin == 1)
+                <a href="/anggota/create" class="btn btn-primary" id="create-new-anggota">Tambah Anggota</a>
+                @endif
+                <!-- <a href="javascript:void(0)" class="btn btn-primary" id="create-new-anggota" onclick="addAnggota()">Tambah Anggota</a> -->
               </div>
             </div>
           </div>
@@ -85,6 +88,7 @@
                   <th scope="col" class="sort" data-sort="name">Tanggal Lahir</th>
                   <th scope="col" class="sort" data-sort="name">Jenis Kelamin</th>
                   <th scope="col" class="sort" data-sort="name">No Hp</th>
+                  <th scope="col" class="sort" data-sort="name">Role</th>
                   <th scope="col">Action</th>
                 </tr>
               </thead>
@@ -113,8 +117,39 @@
                         {{ $anggota[$i-1]->no_hp }}
                       </td>
                       <td>
-                        <a href="javascript:void(0)" data-id="{{$anggota[$i-1]->id}}" onclick="editAnggota(event.target)" class="btn btn-info">Edit</a>
-                        <a href="javascript:void(0)" data-id="{{$anggota[$i-1]->id}}" class="btn btn-danger" onclick="deleteAnggota(event.target)">Delete</a>
+                        @if($anggota[$i-1]->is_admin == 0)
+                          Anggota
+                        @elseif($anggota[$i-1]->is_admin == 1)
+                          Super Admin
+                        @elseif($anggota[$i-1]->is_admin == 2)
+                          Pengurus
+                        @endif
+                        
+                      </td>
+                      <td>
+                        @if(Auth::user()->is_admin == 1)
+                          @if($anggota[$i-1]->is_admin == 0)
+                            <form action="/pengurusSet/{{$anggota[$i-1]->id}}" method="POST">
+                                @csrf
+                                @method('PUT')
+                                <button type="submit" class="btn btn-info">
+                                    Set as Pengurus
+                                </button>
+                            </form>
+                          @elseif($anggota[$i-1]->is_admin == 2)
+                            <form action="/anggotaSet/{{$anggota[$i-1]->id}}" method="POST">
+                                @csrf
+                                @method('PUT')
+                                <button type="submit" class="btn btn-info">
+                                    Set as Anggota
+                                </button>
+                            </form>
+                          @endif
+                          <!-- <a href="javascript:void(0)" data-id="{{$anggota[$i-1]->id}}" onclick="editAnggota(event.target)" class="btn btn-info">Edit</a> -->
+                          @if($anggota[$i-1]->is_admin != 1)
+                            <a href="javascript:void(0)" data-id="{{$anggota[$i-1]->id}}" class="btn btn-danger" onclick="deleteAnggota(event.target)">Delete</a>
+                          @endif
+                        @endif
                       </td>
                     </tr>
                   @endfor
@@ -140,6 +175,7 @@
                   </div>
                   <div class="modal-body">
                       <form name="anggotaForm" class="form-horizontal">
+                       <meta name="csrf-token" content="{{ csrf_token() }}">
                          <input type="hidden" name="id" id="id">
                          <div class="form-group">
                               <label for="name" class="col-sm-8">NIK</label>
@@ -192,6 +228,18 @@
                                   <input type="number" class="form-control" id="no_hp" name="no_hp" placeholder="Masukkan No HP" value="" required>
                                   <span id="noHPError" class="alert-message"></span>
                               </div>
+                          </div>
+                          <div class="form-group">
+                            <label class="col-sm-8">Role</label>
+                            <div class="col-sm-12">
+                                <select id="is_admin" name="is_admin" class="form-control">
+                                  <option value="">Select Role</option>
+                                  <option value="0">Anggota</option>
+                                  <option value="1">Super Admin</option>
+                                  <option value="2">Pengurus</option>
+                                </select>
+                                <span id="is_adminError" class="alert-message"></span>
+                            </div>
                           </div>
                           <div class="form-group">
                               <label for="name" class="col-sm-8">Password</label>
@@ -257,6 +305,7 @@
     $("#no_hp").val('');
     $("#password").val('');
     $("#confirm_password").val('');
+    $("#is_admin").val('');
   })
 </script>
 
@@ -281,46 +330,54 @@
                 cell.innerHTML = i+1;
             });
         }).draw();
+</script>
 
-            function addAnggota() {
-              $("#id").val();
-              $('#post-modal').modal('show');
-            }
-          
-            function editAnggota(event) {
-              var id  = $(event).data("id");
-              let _url = `/anggota/${id}`;
-              $('#nikError').text('');
-              $('#namaAnggotaError').text('');
-              $('#tempatLahirError').text('');
-              $('#tglLahirError').text('');
-              $('#jenisKelaminError').text('');
-              $('#noHPError').text('');
-              $('#passwordError').text('');
-              $('#confirmPasswordError').text('');
-              $("#loader").show();
-              
-              $.ajax({
-                url: _url,
-                type: "GET",
-                success: function(response) {
-                    if(response) {
-                      $("#id").val(response.id);
-                      $("#nik").val(response.nik);
-                      $("#name").val(response.name);
-                      $("#tempat_lahir").val(response.tempat_lahir);
-                      $("#tgl_lahir").val(response.tgl_lahir);
-                      $("#jenis_kelamin").val(response.jenis_kelamin);
-                      $("#no_hp").val(response.no_hp);
-                      $("#password").val(response.password);
-                      $('#post-modal').modal('show');
-                      $("#loader").hide();
-                    }
-                }
-              });
-            }
-          
-            function createAnggota() {
+<script>
+  function addAnggota() {
+    $("#id").val();
+    $('#post-modal').modal('show');
+  }
+</script>
+
+<script>
+  function editAnggota(event) {
+    var id  = $(event).data("id");
+    let _url = `/anggota/${id}`;
+    $('#nikError').text('');
+    $('#namaAnggotaError').text('');
+    $('#tempatLahirError').text('');
+    $('#tglLahirError').text('');
+    $('#jenisKelaminError').text('');
+    $('#noHPError').text('');
+    $('#passwordError').text('');
+    $('#confirmPasswordError').text('');
+    $('#is_adminError').text('');
+    $("#loader").show();
+    
+    $.ajax({
+      url: _url,
+      type: "GET",
+      success: function(response) {
+          if(response) {
+            $("#id").val(response.id);
+            $("#nik").val(response.nik);
+            $("#name").val(response.name);
+            $("#tempat_lahir").val(response.tempat_lahir);
+            $("#tgl_lahir").val(response.tgl_lahir);
+            $("#jenis_kelamin").val(response.jenis_kelamin);
+            $("#no_hp").val(response.no_hp);
+            $("#password").val(response.password);
+            $("#is_admin").val(response.is_admin);
+            $('#post-modal').modal('show');
+            $("#loader").hide();
+          }
+      }
+    });
+  }
+</script>
+
+<script>
+      function createAnggota() {
               var name = $('#name').val();
               var nik = $('#nik').val();
               var id = $('#id').val();
@@ -330,6 +387,7 @@
               var no_hp = $('#no_hp').val();
               var password = $('#password').val();
               var confirm_password = $('#confirm_password').val();
+              var is_admin = $('#is_admin').val();
               
               let _url     = `/anggota`;
               let _token   = $('meta[name="csrf-token"]').attr('content');
@@ -356,6 +414,7 @@
                       no_hp: no_hp,
                       password: password,
                       confirm_password: confirm_password,
+                      is_admin: is_admin,
                       _token: _token
                     },
 
@@ -369,6 +428,8 @@
                             $("#row_"+id+" td:nth-child(5)").html(response.data.tgl_lahir);
                             $("#row_"+id+" td:nth-child(6)").html(response.data.jenis_kelamin);
                             $("#row_"+id+" td:nth-child(7)").html(response.data.no_hp);
+                            $("#row_"+id+" td:nth-child(8)").html(response.data.password);
+                            $("#row_"+id+" td:nth-child(9)").html(response.data.is_admin);
 
                             // location.reload(true);
                           } else {
@@ -376,7 +437,7 @@
                             // $('table tbody').prepend('<tr id="row_'+response.data.id+'"><td>'+response.data.id+'</td><td>'+response.data.name+'</td><td>'+response.data.email+'</td><td>'+response.data.is_admin+'</td><td><a href="javascript:void(0)" data-id="'+response.data.id+'" class="btn btn-danger" onclick="deleteAccount(event.target)">Delete</a></td></tr>');
 
                             // $('table tfoot').prepend('<tr id="row_'+response.data.id+'"><td>'+response.data.id+'</td><td>'+response.data.name+'</td><td>'+response.data.email+'</td><td>'+response.data.is_admin+'</td><td><a href="javascript:void(0)" data-id="'+response.data.id+'" onclick="editAccount(event.target)" class="btn btn-info">Edit</a><a href="javascript:void(0)" data-id="'+response.data.id+'" class="btn btn-danger" onclick="deleteAccount(event.target)">Delete</a></td></tr>');
-                            $('table tfoot').prepend('<tr id="row_'+response.data.id+'"><td></td><td>'+response.data.nik+'</td><td>'+response.data.name+'</td><td>'+response.data.tempat_lahir+'</td><td>'+response.data.jenis_kelamin+'</td><td>'+response.data.no_hp+'</td><td><a href="javascript:void(0)" data-id="'+response.data.id+'" onclick="editAnggota(event.target)" class="btn btn-info">Edit</a><a href="javascript:void(0)" data-id="'+response.data.id+'" class="btn btn-danger" onclick="deleteAnggota(event.target)">Delete</a></td></tr>');
+                            $('table tfoot').prepend('<tr id="row_'+response.data.id+'"><td></td><td>'+response.data.nik+'</td><td>'+response.data.name+'</td><td>'+response.data.tempat_lahir+'</td><td>'+response.data.jenis_kelamin+'</td><td>'+response.data.no_hp+'</td><td>'+response.data.is_admin+'</td><td><a href="javascript:void(0)" data-id="'+response.data.id+'" onclick="editAnggota(event.target)" class="btn btn-info">Edit</a><a href="javascript:void(0)" data-id="'+response.data.id+'" class="btn btn-danger" onclick="deleteAnggota(event.target)">Delete</a></td></tr>');
                           }
                           $('#nik').val('');
                           $('#name').val('');
@@ -386,6 +447,7 @@
                           $('#no_hp').val('');
                           $('#password').val('');
                           $('#confirm_password').val('');
+                          $('#is_admin').val('');
 
                           $('#post-modal').modal('hide');
 
@@ -396,15 +458,15 @@
 
                     },
                     error: function(response) {
-                      $('#nikError').text(response.responseJSON.errors.nik);
-                      $('#namaAnggotaError').text(response.responseJSON.errors.name);
-                      $('#tempatLahirError').text(response.responseJSON.errors.tempat_lahir);
-                      $('#tglLahirError').text(response.responseJSON.errors.tgl_lahir);
-                      $('#jenisKelaminError').text(response.responseJSON.errors.jenis_kelamin);
-                      $('#noHPError').text(response.responseJSON.errors.no_hp);
-                      $('#passwordError').text(response.responseJSON.errors.password);
-                      $('#confirmPasswordError').text(response.responseJSON.errors.confirm_password
-);
+                        // $('#nikError').text(response.responseJSON.errors.nik);
+                        // $('#namaAnggotaError').text(response.responseJSON.errors.name);
+                        // $('#tempatLahirError').text(response.responseJSON.errors.tempat_lahir);
+                        // $('#tglLahirError').text(response.responseJSON.errors.tgl_lahir);
+                        // $('#jenisKelaminError').text(response.responseJSON.errors.jenis_kelamin);
+                        // $('#noHPError').text(response.responseJSON.errors.no_hp);
+                        // $('#passwordError').text(response.responseJSON.errors.password);
+                        // $('#confirmPasswordError').text(response.responseJSON.errors.confirm_password);
+                        // $('#is_adminError').text(response.responseJSON.errors.confirm_password);
 
                       // console.log(JSON.stringify(response.responseJSON.errors));
                     }
@@ -414,6 +476,15 @@
                 alert('Please fill all the field')
               }
             }
+</script>
+
+
+<script>
+            
+          
+            
+          
+            
           
             function deleteAnggota(event) {
               $('#delete-modal').modal('show');

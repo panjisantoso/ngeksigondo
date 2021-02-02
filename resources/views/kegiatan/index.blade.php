@@ -292,8 +292,159 @@
         $('#post-modal').modal('show');
       }
     </script>
+@if(Auth::user()->is_admin == 1)
+<script>
+      function editKegiatan(event) {
+        var id  = $(event).data("id");
+
+        let _url = `/admin/kegiatans/${id}`;
+        $('#acaraError').text('');
+        $('#tempatError').text('');
+        $('#alamatError').text('');
+        $('#linkGmapsError').text('');
+        $('#tanggalError').text('');
+        $('#jamMulaiError').text('');
+        $('#jamSelesaiError').text('');
+        $("#loader").show();
+        
+        $.ajax({
+          url: _url,
+          type: "GET",
+          success: function(response) {
+              if(response) {
+                $("#id").val(response.id);
+                $("#acara").val(response.acara);
+                $("#tempat").val(response.tempat);
+                $("#alamat").val(response.alamat);
+                $("#link_gmaps").val(response.link_gmaps);
+                $("#tanggal").val(response.tanggal);
+                $("#jammulai").val(response.jammulai);
+                $("#jamselesai").val(response.jamselesai);
+                $('#post-modal').modal('show');
+                $("#loader").hide();
+              }
+          }
+        });
+      }
+    </script>
 
     <script>
+        function createkegiatan() {
+              var acara = $('#acara').val();
+              var tempat = $('#tempat').val();
+              var alamat = $('#alamat').val();
+              var link_gmaps = $('#link_gmaps').val();
+              var tanggal = $('#tanggal').val();
+              var jammulai = $('#jammulai').val();
+              var jamselesai = $('#jamselesai').val();
+              var id = $('#id').val();
+
+              let _url     = `/admin/kegiatan`;
+              let _token   = $('meta[name="csrf-token"]').attr('content');
+          
+              if(acara!="" && tempat!="" && tanggal!="" && jammulai!="" && jamselesai!=""){
+                $('#post-modal').modal('hide');
+
+                $("#loader").show();
+          
+                $.ajax({
+                  url: _url,
+                  type: "POST",
+                  data: {
+                    id: id,
+                    acara: acara,
+                    tempat: tempat,
+                    alamat: alamat,
+                    link_gmaps: link_gmaps,
+                    tanggal: tanggal,
+                    jammulai: jammulai,
+                    jamselesai: jamselesai,
+                    _token: _token
+                  },
+
+                  success: function(response) {
+                      if(response.code == 200) {
+
+                        if(id != ""){
+                          $("#row_"+id+" td:nth-child(2)").html(response.data.acara);
+                          $("#row_"+id+" td:nth-child(3)").html(response.data.tempat);
+                          $("#row_"+id+" td:nth-child(4)").html(response.data.tanggal);
+                          $("#row_"+id+" td:nth-child(5)").html(response.data.jammulai);
+                          $("#row_"+id+" td:nth-child(6)").html(response.data.jamselesai);
+                          $("#row_"+id+" td:nth-child(7)").html(response.data.alamat);
+                          $("#row_"+id+" td:nth-child(8)").html(response.data.link_gmaps);
+
+                          // location.reload(true);
+                        } else {
+                          // $('table tbody').prepend('<tr id="row_'+response.data.id+'"><td>'+response.data.id+'</td><td>'+response.data.name+'</td><td>'+response.data.email+'</td><td>'+response.data.is_admin+'</td><td><a href="javascript:void(0)" data-id="'+response.data.id+'" onclick="editAccount(event.target)" class="btn btn-info">Edit</a><a href="javascript:void(0)" data-id="'+response.data.id+'" class="btn btn-danger" onclick="deleteAccount(event.target)">Delete</a></td></tr>');
+                          // $('table tbody').prepend('<tr id="row_'+response.data.id+'"><td>'+response.data.id+'</td><td>'+response.data.name+'</td><td>'+response.data.email+'</td><td>'+response.data.is_admin+'</td><td><a href="javascript:void(0)" data-id="'+response.data.id+'" class="btn btn-danger" onclick="deleteAccount(event.target)">Delete</a></td></tr>');
+
+                          // $('table tfoot').prepend('<tr id="row_'+response.data.id+'"><td>'+response.data.id+'</td><td>'+response.data.name+'</td><td>'+response.data.email+'</td><td>'+response.data.is_admin+'</td><td><a href="javascript:void(0)" data-id="'+response.data.id+'" onclick="editAccount(event.target)" class="btn btn-info">Edit</a><a href="javascript:void(0)" data-id="'+response.data.id+'" class="btn btn-danger" onclick="deleteAccount(event.target)">Delete</a></td></tr>');
+                          $('table tfoot').prepend('<tr id="row_'+response.data.id+'"><td></td><td>'+response.data.acara+'</td><td>'+response.data.tempat+'</td><td>'+response.data.alamat+'</td><td>'+response.data.link_gmaps+'</td><td>'+response.data.tanggal+'</td><td>'+response.data.jammulai+'</td><td>'+response.data.jamselesai+'</td><td><form action="/kegiatan/" method="GET"><button class="btn btn-primary" type="submit">Detail</button></form><a href="javascript:void(0)" data-id="'+response.data.id+'" onclick="editKegiatan(event.target)" class="btn btn-info">Edit</a><a href="javascript:void(0)" data-id="'+response.data.id+'" class="btn btn-danger" onclick="deleteKegiatan(event.target)">Delete</a></td></tr>');
+                        }
+                        $('#acara').val('');
+                        $('#tempat').val('');
+                        $('#alamat').val('');
+                        $('#link_gmaps').val('');
+                        $('#tanggal').val('');
+                        $('#jammulai').val('');
+                        $('#jamselesai').val('');
+
+                        $('#post-modal').modal('hide');
+
+                        // location.reload(true);
+    
+                        $("#loader").hide();
+                      }
+
+                  },
+                  error: function(response) {
+                    $('#acaraError').text(response.responseJSON.errors.acara);
+                    $('#tempatError').text(response.responseJSON.errors.tempat);
+                    $('#alamatError').text(response.responseJSON.errors.alamat);
+                    $('#linkGmapsError').text(response.responseJSON.errors.link_gmaps);
+                    $('#tanggalError').text(response.responseJSON.errors.tanggal);
+                    $('#jamMulaiError').text(response.responseJSON.errors.jammulai);
+                    $('#jamSelesaiError').text(response.responseJSON.errors.jamselesai);
+                    // console.log(JSON.stringify(response.responseJSON.errors));
+                  }
+                });
+              }else{
+                alert('Please fill all the field')
+              }
+            }
+          
+            
+    </script>
+
+    <script>          
+            function deleteKegiatan(event) {
+              $('#delete-modal').modal('show');
+              var id  = $(event).data("id");
+              let _url = `/admin/kegiatan/${id}`;
+              let _token   = $('meta[name="csrf-token"]').attr('content');
+              $(document).on('click', '#btnDelete', function(){
+                $.ajax({
+                  url: _url,
+                  type: 'PUT',
+                  data: {
+                    _token: _token
+                  },
+                  beforeSend: function(){
+                    $("#loader").show();
+                    $('#delete-modal').modal('hide');
+                  },
+                  success: function(response) {
+                    $("#row_"+id).remove();
+                    $("#loader").hide();
+                    console.log(response.data);
+                  }
+                });
+              });
+            }
+    </script>
+@elseif(Auth::user()->is_admin == 2)
+<script>
       function editKegiatan(event) {
         var id  = $(event).data("id");
 
@@ -329,7 +480,7 @@
     </script>
 
     <script>
-function createkegiatan() {
+        function createkegiatan() {
               var acara = $('#acara').val();
               var tempat = $('#tempat').val();
               var alamat = $('#alamat').val();
@@ -338,7 +489,7 @@ function createkegiatan() {
               var jammulai = $('#jammulai').val();
               var jamselesai = $('#jamselesai').val();
               var id = $('#id').val();
-          
+
               let _url     = `/kegiatan`;
               let _token   = $('meta[name="csrf-token"]').attr('content');
           
@@ -443,6 +594,8 @@ function createkegiatan() {
               });
             }
     </script>
+@endif
+    
     <!-- Argon Scripts -->
     <!-- Core -->
     <script src="{{ asset('assets') }}/vendor/js-cookie/js.cookie.js"></script>

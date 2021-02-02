@@ -11,6 +11,7 @@ use App\Models\Kehadiran;
 use App\Models\Pengumuman;
 use App\Models\GambarKegiatan;
 use App\Models\DokumenKegiatan;
+use App\Models\Berita;
 class Dashboard1Controller extends Controller
 {
     /**
@@ -28,14 +29,18 @@ class Dashboard1Controller extends Controller
         $dateMonth = date('F Y');
         
         $kegiatanList = Kegiatan::get();
+        $beritaList = Berita::get();
         $pengumumanList = Pengumuman::get();
         $gambarKegiatan = GambarKegiatan::get();
-        return view('dashboard1', compact('dateMonth','kegiatanList','tglSkrng','gambarKegiatan','pengumumanList'));
+        return view('dashboard1', compact('dateMonth','kegiatanList','tglSkrng','gambarKegiatan','pengumumanList','beritaList'));
     }
 
 
-    public function lihatBerita(){
-        return view('berita.list');
+    public function lihatBerita($id){
+        $mytime = Carbon::now();
+        $tglSkrng = $mytime->toDateTimeString();
+        $beritas = Berita::find($id);
+        return view('berita.detail',compact('beritas','tglSkrng','mytime'));
     }
 
     public function lihatPengumuman($id){
